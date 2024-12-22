@@ -13,12 +13,26 @@
     "windows": [
       {
         "title": "Tinyimg",
-        "width": 800,
-        "height": 600
+        "width": 360,
+        "height": 468
       }
     ],
     "security": {
-      "csp": null
+      "csp": {
+        "default-src": "'self' customprotocol: asset:",
+        "connect-src": "ipc: http://ipc.localhost",
+        "font-src": [
+          "https://fonts.gstatic.com"
+        ],
+        "img-src": "'self' asset: http://asset.localhost blob: data:",
+        "style-src": "'unsafe-inline' 'self' https://fonts.googleapis.com"
+      },
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "**"
+        ]
+      }
     }
   },
   "bundle": {

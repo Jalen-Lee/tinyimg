@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@radix-ui/themes": "^3.1.6",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-fs": "~2",
@@ -20,12 +21,16 @@
     "@tauri-apps/plugin-upload": "~2",
     "ahooks": "^3.8.4",
     "antd": "^5.22.5",
+    "eventemitter3": "^5.0.1",
+    "mime": "^4.0.6",
     "radash": "^12.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "@types/node": "^22.10.2",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react": "^4.3.4",

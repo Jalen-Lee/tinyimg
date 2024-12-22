@@ -1,16 +1,18 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
 import Guide from './components/guide'
-
-// import "./App.css";
+import Workspace from './components/workspace'
+import useAppStore from './store/app.store' 
+import useSelector from './hooks/useSelector'
 
 function App() {
-
+	const {
+    workspace:{
+      hasFile
+    }
+  } = useAppStore(useSelector(['workspace']))
 
   return (
     <main id="tinyimg">
-      <Guide/>
+      {hasFile ? <Workspace/> : <Guide/>}
     </main>
   );
 }

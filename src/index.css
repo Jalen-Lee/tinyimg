@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 html,body,#root,#tinyimg{
-  height: 100%;
-	background-color: rgb(15 23 42 / 1);
+  height: 100vh;
+  overflow: hidden;
 }

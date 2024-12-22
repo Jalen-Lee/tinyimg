@@ -10,8 +10,19 @@
     "opener:default",
     "dialog:default",
     "fs:default",
+    "fs:allow-app-meta",
+    "fs:allow-app-meta-recursive",
+    "fs:allow-app-read",
+    "fs:allow-app-read-recursive",
+    "fs:allow-appcache-meta",
+    "fs:allow-appcache-meta-recursive",
+    "fs:allow-appcache-read",
+    "fs:allow-appcache-read-recursive",
+    "fs:allow-lstat",
     "log:default",
     "http:default",
-    "upload:default"
+    "upload:default",
+    "core:window:allow-set-size",
+    "core:webview:allow-set-webview-size"
   ]
 }
