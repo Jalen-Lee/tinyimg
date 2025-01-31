@@ -3,18 +3,24 @@ import { Splitter,Button,notification } from 'antd';
 import { SettingOutlined,FileAddOutlined } from '@ant-design/icons';
 import TaskList from './components/task-list';
 import Detail from './components/viewer';
-import SettingPanel from '../setting-panel';
-import Processor,{ProcessorTask} from '@/utils/processor';
+import SettingPanel from '../setting';
+import Processor,{ProcessorType} from '@/utils/processor';
 import useSelector from '@/hooks/useSelector';
 import useAppStore from '@/store/app.store';
-
+import {Event} from '@/constants'
 function Workspace(){
   const [currentFile,setCurrentFile] = useState<FileInfo['id']>('')
   const [selectedFiles,setSelectedFiles] = useState<Array<FileInfo['id']>>([])
-  const {getFileById} = useAppStore(useSelector(['getFileById']));
+  const {getFileById,eventEmitter,workspace,setWorkspace} = useAppStore(useSelector(['workspace','setWorkspace','getFileById','eventEmitter']));
   
   const handleCompress = async () => {
     console.log("handleCompress")
+    workspace.fileList.forEach(file=>{
+      if(selectedFiles.includes(file.id)){
+        file.compressStatus = ProcessorType.TaskStatus.Processing
+      }
+    })
+    setWorkspace({...workspace})
     const processor = new Processor()
     const result = await processor
     .setTasks(selectedFiles.map(file=>{
@@ -26,12 +32,14 @@ function Workspace(){
           ext:fileInfo.ext
         }
       }
-    }).filter(Boolean) as ProcessorTask[])
+    }).filter(Boolean) as ProcessorType.Task[])
     .setFulfilledCb((res)=>{
       console.log("压缩完成",res)
+      eventEmitter.emit(Event['Compress.completed'],res)
     })
-    .setRejectedCb((err)=>{
-      console.log("压缩失败",err)
+    .setRejectedCb((res)=>{
+      console.log("压缩失败",res)
+      eventEmitter.emit(Event['Compress.failed'] ,res)
     })
     .run()
     console.log("压缩全部完成",result)
@@ -56,7 +64,7 @@ function Workspace(){
           {/* <Button color="default" size='middle' icon={<SettingOutlined />}/> */}
           {/* <Button color="default"  size='middle' icon={<FileAddOutlined />}/> */}
           <SettingPanel />
-          <Button color="default" variant="solid" size='middle' onClick={handleCompress}>
+          <Button color="default" variant="solid" size='middle' onClick={handleCompress} disabled={!selectedFiles.length}>
             Compress
           </Button>
           <Button color="default" variant="solid" size='middle' disabled>

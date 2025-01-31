@@ -1,8 +1,8 @@
 [package]
-name = "tinyimg"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+name = "PicSharp"
+version = "0.0.1"
+description = "Swiss Army Knife: image compression, format conversion, oss storage"
+authors = ["JaylenL"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -27,4 +27,8 @@ tauri-plugin-fs = "2"
 tauri-plugin-log = "2"
 tauri-plugin-http = "2"
 tauri-plugin-upload = "2"
+tauri-plugin-os = "2"
+tauri-plugin-store = "2"
 
+[build]
+rustc-wrapper = "~/.cargo/bin/sccache"

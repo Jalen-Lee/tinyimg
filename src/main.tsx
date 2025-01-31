@@ -1,21 +1,16 @@
+import "./i18n";
 import React from "react";
 import ReactDOM from "react-dom/client";
+import createAppMenu from "./utils/menu";
 import App from "./App";
-import { Theme as RadixTheme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
-import './index.css';
+import useAppStore from "./store/app.store";
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement,{
-  onCaughtError(error){
-    console.log("React onCaughtError",error)
-  },
-  onUncaughtError(error){
-    console.log("React onUncaughtError",error)
-  }
-}).render(
+useAppStore.getState().loadSettings();
+// createAppMenu();
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RadixTheme>
-      <App />
-    </RadixTheme>
-  </React.StrictMode>,
+    <App />
+  </React.StrictMode>
 );

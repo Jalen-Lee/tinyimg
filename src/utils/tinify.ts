@@ -1,7 +1,7 @@
 import { upload } from '@tauri-apps/plugin-upload';
 
 export namespace Tinify{
-	export interface CompressResult{
+	export interface ApiCompressResult{
 		input:{
 			size:number;
 			type:string;
@@ -15,6 +15,9 @@ export namespace Tinify{
 			width:number;
 		};
 	}
+	export interface CompressResult extends ApiCompressResult{
+		id:string;
+	}
 }
 
 export class Tinify{
@@ -24,13 +27,15 @@ export class Tinify{
 
   constructor(apiKeys: string[]){
 		this.apiKeys = apiKeys.filter(Boolean);
-		console.log('this.apiKeys',this.apiKeys)
 		this.apiKey64s = new Map(this.apiKeys.map(apiKey=>[apiKey,btoa(`api:${apiKey}`)]))
 	}
 
-	public async compress(filePtah: string,mime:string){
-		return new Promise(async(resolve,reject)=>{
+	public async compress(filePtah: string,mime:string):Promise<Tinify.CompressResult>{
+		return new Promise<Tinify.CompressResult>(async(resolve,reject)=>{
 			const apiKey = this.apiKey64s.get(this.apiKeys[0]) || '';
+			if(!apiKey){
+				return reject(new Error('[AccountError]: Authentication failed. Have you set the API Key? Verify your API key.'))
+			}
 			try{
 				const headers = new Map<string,string>();
 				headers.set('Content-Type',mime)
@@ -41,11 +46,13 @@ export class Tinify{
 					undefined,
 					headers
 				);
-				const payload = JSON.parse(result) as Tinify.CompressResult;
-				const {output} = payload;
-				resolve(output.url)
+				const payload = JSON.parse(result) as Tinify.ApiCompressResult;
+				resolve({
+					id: filePtah,
+					input:payload.input,
+					output:payload.output
+				})
 			}catch(error){
-				console.log('tinypng:compress',error)
 				reject(error)
 			}
 		})

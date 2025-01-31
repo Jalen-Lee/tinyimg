@@ -1,0 +1,17 @@
+{
+  "home": "首页",
+  "slogan": "专业的图片处理解决方案，提供高效的图片压缩、格式转换和云存储服务，助您轻松管理图片资源。",
+  "settings": "设置",
+  "settings.description": "管理应用设置和偏好。",
+  "settings.general.language": "语言",
+  "settings.general.language.description": "选择您偏好的应用语言。",
+  "general": "通用配置",
+  "general.description": "管理应用的通用设置和偏好。",
+  "compression": "图片压缩",
+  "compression.description": "支持JPG、PNG、WebP、AVIF等主流格式之间的相互转换，满足不同场景下的图片格式需求。",
+  "conversion": "格式转换",
+  "conversion.description": "支持JPG、PNG、WebP、AVIF等主流格式之间的相互转换，满足不同场景下的图片格式需求。",
+  "oss": "云存储",
+  "oss.description": "集成Amazon S3对象存储服务，提供安全可靠的云端存储方案，支持图片的上传、管理和分发。",
+  "copyright": "版权&条款"
+}

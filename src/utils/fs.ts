@@ -2,7 +2,7 @@ import { lstat } from '@tauri-apps/plugin-fs';
 import { basename,extname } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import mime from 'mime';
-
+import { ProcessorType } from '@/utils/processor';
 
 
 export function formatFileSize(bytes: number): string {
@@ -34,9 +34,10 @@ export async function parseFiles(filePaths:string[],validExts:string[]){
 				isSymlink: info.isSymlink,
 				mimeType: mime.getType(ext) ?? '',
 				ext,
-				hasProcess: false,
 				compressedSize: 0,
-				formatCompressedSize: formatFileSize(0)
+				formatCompressedSize: formatFileSize(0),
+				compressRate: '0%',
+				compressStatus: ProcessorType.TaskStatus.Pending
 			}
 			fileMap.set(filePath, fileInfo)
 			files.push(fileInfo)

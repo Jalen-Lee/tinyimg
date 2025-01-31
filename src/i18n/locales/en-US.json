@@ -1,0 +1,17 @@
+{
+  "home": "Home",
+  "slogan": "Professional image processing solution, providing efficient image compression, format conversion, and cloud storage services to help you easily manage image resources.",
+  "settings": "Settings",
+  "settings.description": "Manage the application settings and preferences.",
+  "settings.general.language": "Language",
+  "settings.general.language.description": "Choose your preferred application language.",
+  "general": "General",
+  "general.description": "Manage the general application settings and preferences.",
+  "compression": "Compression",
+  "compression.description": "Support for JPG, PNG, WebP, AVIF, and other formats, providing efficient image compression to reduce file size while maintaining image quality.",
+  "conversion": "Conversion",
+  "conversion.description": "Support for JPG, PNG, WebP, AVIF, and other formats, providing efficient image conversion to meet different image format needs.",
+  "oss": "OSS",
+  "oss.description": "Integrate Amazon S3 object storage service, providing secure and reliable cloud storage solutions, supporting image upload, management, and distribution.",
+  "copyright": "Copyright & Terms"
+}

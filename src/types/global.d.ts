@@ -1,3 +1,4 @@
+import { ProcessorType } from '@/utils/processor';
 declare global {
   interface FileInfo {
     id: string;
@@ -11,9 +12,11 @@ declare global {
     isSymlink: boolean;
     mimeType: string;
     ext: string;
-    hasProcess: boolean;
     compressedSize: number;
     formatCompressedSize: string;
+    compressRate: string;
+    compressStatus: ProcessorType.TaskStatus;
+    errorMessage?: string;
   }
 }
 

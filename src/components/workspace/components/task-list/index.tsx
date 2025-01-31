@@ -1,10 +1,12 @@
-import { memo } from 'react';
+import { memo,useEffect } from 'react';
 import TaskItem from '../task-item';
-import { ScrollArea } from '@radix-ui/themes';
+import { ScrollArea,CheckboxGroup } from '@radix-ui/themes';
 import useAppStore from '@/store/app.store';
 import useSelector from '@/hooks/useSelector';
 import { Checkbox } from 'antd';
-
+import { Event } from '@/constants';
+import { ProcessorType } from '@/utils/processor';
+import { formatFileSize } from '@/utils/fs';
 interface TaskListProps{
   onSelect: (fileId: FileInfo['id']) => void;
   onChange: (values: Array<FileInfo['id']>) => void;
@@ -16,10 +18,13 @@ function TaskList(props:TaskListProps) {
     onChange
   } = props
   const {
-    workspace:{
-      fileList
-    }
-  } = useAppStore(useSelector(['workspace']))
+    workspace,
+    getFileById,
+    setWorkspace,
+    eventEmitter
+  } = useAppStore(useSelector(['workspace','eventEmitter','getFileById','setWorkspace']))
+
+  console.log("workspace",workspace)
 
 
   const handleSelect = (e:React.MouseEvent<HTMLDivElement>)=>{
@@ -31,18 +36,39 @@ function TaskList(props:TaskListProps) {
     onChange(values)
   }
 
+  useEffect(()=>{
+    eventEmitter.on(Event['Compress.completed'],(res:ProcessorType.TaskResult)=>{
+      const target = getFileById(res.id)
+      if(target){
+        console.log("压缩完成111",res)
+        target.compressStatus = ProcessorType.TaskStatus.Completed
+        target.compressedSize = res.size || 0
+        target.formatCompressedSize = formatFileSize(target.compressedSize)
+        target.compressRate = `${((target.size - target.compressedSize) / target.size * 100).toFixed(2)}%`
+        setWorkspace({
+          ...workspace,
+        })
+      }
+    })
+    return ()=>{
+      eventEmitter.removeAllListeners();
+    }
+  },[eventEmitter])
+
   return (
     <ScrollArea className='w-full h-full pt-[12px] px-[12px] flex flex-col gap-y-[12px]'>
-      <Checkbox.Group onChange={handleGroupChange}>
+      <CheckboxGroup.Root onValueChange={handleGroupChange} >
         <div className='flex flex-col gap-y-[12px]'>
-          {fileList.map((file)=>(
-            <div className='w-full flex items-center gap-[12px]' key={file.id} data-id={file.id} onClick={handleSelect}>
-              <Checkbox value={file.id} ><></></Checkbox>
-              <TaskItem data={file} />
+          {workspace.fileList.map((file)=>(
+            <div className='w-full flex items-center gap-[12px]' key={file.id} data-id={file.id}>
+              <CheckboxGroup.Item value={file.id} />
+              <div onClick={handleSelect}>
+                <TaskItem data={file} />
+              </div>
             </div>
           ))}
         </div>
-      </Checkbox.Group>
+      </CheckboxGroup.Root>
     </ScrollArea>
   );
 }
