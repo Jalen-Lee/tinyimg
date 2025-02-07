@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import AppLayout from "./components/layouts/app-layout";
 import Home from "./pages/home";
 import Compression from "./pages/compression";
@@ -14,11 +14,11 @@ export default function AppRoutes() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<AppLayout />}>
-            <Route index element={<Home />} />
+            <Route index element={<Navigate to="/home" />} />
             <Route path="home" element={<Home />} />
             <Route path="compression" element={<Compression />} />
             <Route path="settings" element={<Settings />}>
-              <Route index element={<SettingsGeneral />} />
+              <Route index element={<Navigate to="/settings/general" />} />
               <Route path="general" element={<SettingsGeneral />} />
               <Route path="compression" element={<SettingsCompression />} />
             </Route>

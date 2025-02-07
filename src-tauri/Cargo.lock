@@ -6,6 +6,12 @@ version = 3
 name = "PicSharp"
 version = "0.0.1"
 dependencies = [
+ "glob",
+ "log",
+ "objc2",
+ "objc2-app-kit",
+ "objc2-foundation",
+ "objc2-uniform-type-identifiers",
  "serde",
  "serde_json",
  "tauri",

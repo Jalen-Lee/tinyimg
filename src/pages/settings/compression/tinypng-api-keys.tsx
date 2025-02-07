@@ -1,4 +1,4 @@
-import { CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { CardHeader, CardContent, CardTitle,CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle } from 'lucide-react';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -12,6 +12,11 @@ import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
+import { debounce } from 'radash';
+import { useI18n } from '@/i18n';
+import { Trans } from 'react-i18next';
+
+
 import {
   Form,
   FormControl,
@@ -31,6 +36,7 @@ const tinypngApiKeySchema = z.object({
 type TinypngApiKeyFormData = z.infer<typeof tinypngApiKeySchema>;
 
 function SettingsCompressionTinyPngApiKeys() {
+  const t = useI18n();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { settings, setSettings } = useAppStore(useSelector(['settings', 'setSettings']));
   const tinypngApiKeys = settings.get('tinypng.apiKeys') || [];
@@ -79,7 +85,7 @@ function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'name',
       id: 'name',
-      header: 'Name',
+      header: t('settings.compression.tinypng_api_keys.table.name'),
       cell: ({ row }) =>(
         <div>{row.original.name}</div>
       ),
@@ -87,7 +93,7 @@ function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'api_key',
       id: 'api_key',
-      header: 'API Key',
+      header: t('settings.compression.tinypng_api_keys.table.api_key'),
       cell: ({ row }) => (
         <div className='cursor-pointer'>{row.original.api_key}</div>
       ),
@@ -95,13 +101,13 @@ function SettingsCompressionTinyPngApiKeys() {
     {
       accessorKey: 'created_at',
       id: 'created_at',
-      header: 'Created At',
+      header: t('settings.compression.tinypng_api_keys.table.created_at'),
       cell: ({ row }) => (
         <div>{dayjs(Number(row.original.created_at)).format('YYYY-MM-DD HH:mm:ss')}</div>
       ),
     },
     {
-      header: 'Actions',
+      header: t('settings.compression.tinypng_api_keys.table.actions'),
       id: 'actions',
       cell: ({ row }) => (
         <Button variant="ghost" size="sm" onClick={() => {
@@ -118,33 +124,29 @@ function SettingsCompressionTinyPngApiKeys() {
       <CardHeader>
         <div className="flex items-center justify-between gap-10">
           <div>
-            <CardTitle className="text-lg">Tinypng Api Keys</CardTitle>
-            <p>
-              <a target="_blank" href="https://tinypng.com/developers" className="text-blue-500 underline">
-                Tinypng
-              </a>{' '}
-              is a tool that helps you compress images.
-              You can click{' '}
-              <a target="_blank" href="https://tinypng.com/developers" className="text-blue-500 underline">
-                here
-              </a>{' '}
-              to get your api key.
-            </p>
+            <CardTitle className="text-lg">{t('settings.compression.tinypng_api_keys.title')}</CardTitle>
+            <CardDescription>
+              {/* @ts-ignore */}
+            <Trans i18nKey="settings.compression.tinypng_api_keys.description" components={{ 
+              tinypng: <a target="_blank" href="https://tinypng.com/developers" className="text-blue-500 underline"/>, 
+              here: <a target="_blank" href="https://tinypng.com/developers" className="text-blue-500 underline"/> 
+            }}></Trans>
+            </CardDescription>
           </div>
           <div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  Add
+                  {t('settings.compression.tinypng_api_keys.form.add')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(handleSubmit)}>
                     <DialogHeader>
-                      <DialogTitle>Add API Key</DialogTitle>
-                      <DialogDescription>Add a new API key to the system.</DialogDescription>
+                      <DialogTitle>{t('settings.compression.tinypng_api_keys.form.add_title')}</DialogTitle>
+                      <DialogDescription>{t('settings.compression.tinypng_api_keys.form.add_description')}</DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-col gap-2 mt-4">
                       <div className='flex flex-col gap-2'>
@@ -153,11 +155,11 @@ function SettingsCompressionTinyPngApiKeys() {
                           name="name"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Name</FormLabel>
+                              <FormLabel>{t('settings.compression.tinypng_api_keys.form.name')}</FormLabel>
                               <FormControl>
                                 <Input
                                   type="text"
-                                  placeholder="Enter name"
+                                  placeholder={t('settings.compression.tinypng_api_keys.form.name_placeholder')}
                                   {...field}
                                 />
                               </FormControl>
@@ -172,11 +174,11 @@ function SettingsCompressionTinyPngApiKeys() {
                           name="api_key"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>API Key</FormLabel>
+                              <FormLabel>{t('settings.compression.tinypng_api_keys.form.api_key')}</FormLabel>
                               <FormControl>
                                 <Input
                                   type="text"
-                                  placeholder="Enter API Key"
+                                  placeholder={t('settings.compression.tinypng_api_keys.form.api_key_placeholder')}
                                   {...field}
                                 />
                               </FormControl>
@@ -189,12 +191,12 @@ function SettingsCompressionTinyPngApiKeys() {
                     <DialogFooter className="mt-4">
                       <DialogTrigger asChild>
                         <Button variant="outline">
-                          Cancel
+                          {t('settings.compression.tinypng_api_keys.form.cancel')}
                         </Button>
                       </DialogTrigger>
                       <Button type="submit">
                         <PlusCircle className="h-4 w-4" />
-                        <span className="hidden sm:ml-2 sm:inline">Add</span>
+                        <span className="hidden sm:ml-2 sm:inline">{t('settings.compression.tinypng_api_keys.form.add')}</span>
                       </Button>
                     </DialogFooter>
                   </form>
@@ -211,7 +213,7 @@ function SettingsCompressionTinyPngApiKeys() {
           ) : (
             <div className="flex flex-col items-center justify-center text-center">
             <KeyRound className="h-12 w-12 text-muted-foreground" />
-            <h3 className="mt-4 text-lg font-semibold">No API keys defined yet</h3>
+            <h3 className="mt-4 text-lg font-semibold">{t('settings.compression.tinypng_api_keys.no_api_keys')}</h3>
           </div>
           )
         }

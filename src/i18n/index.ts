@@ -17,6 +17,7 @@ declare module 'i18next' {
 export const useI18n = () => {
   const { t } = useTranslation();
   return (key: keyof typeof enUS, options?: Parameters<typeof t>[2]) => {
+    // @ts-ignore
     return t(key, options);
   }
 };

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Image } from 'antd';
 import ImgTag from '@/components/img-tag';
-import { ProcessorType } from '@/utils/processor';
+import { IScheduler } from '@/utils/scheduler';
 import {SyncOutlined} from '@ant-design/icons'
 import { Badge,Tooltip } from '@radix-ui/themes'
 
@@ -32,7 +32,7 @@ function TaskItem(props:TaskItemProps) {
           </div>
         </div>
         {
-          data.compressStatus === ProcessorType.TaskStatus.Completed && (
+          data.compressStatus === IScheduler.TaskStatus.Completed && (
             <div className='flex gap-[10px] items-center'>
               <div className='flex flex-col items-end'>
                 <div className='text-[14px] text-black font-bold'>{`-${data.compressRate}`}</div>
@@ -42,12 +42,12 @@ function TaskItem(props:TaskItemProps) {
           )
         }
         {
-          data.compressStatus === ProcessorType.TaskStatus.Processing && (
+          data.compressStatus === IScheduler.TaskStatus.Processing && (
             <SyncOutlined spin/>
           )
         }
         {
-          data.compressStatus === ProcessorType.TaskStatus.Failed && (
+          data.compressStatus === IScheduler.TaskStatus.Failed && (
             <Tooltip content={data.errorMessage || 'Unknown error'}>
               <Badge color="red">Error</Badge>
             </Tooltip>

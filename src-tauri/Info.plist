@@ -1,0 +1,53 @@
+<plist version="1.0">
+<dict>
+    <key>NSServices</key>
+    <array>
+      <dict>
+        <key>NSMenuItem</key>
+        <dict>
+          <key>default</key>
+          <string>PicSharp • 图片压缩</string>
+        </dict>
+        <key>NSMessage</key>
+        <string>nsCompress</string>
+        <key>NSPortName</key>
+        <string>PicSharp</string>
+			<key>NSRequiredContext</key>
+			<dict>
+				<key>NSTextContent</key>
+				<string>FilePath</string>
+			</dict>
+			<key>NSSendTypes</key>
+			<array>
+				<string>NSFilenamesPboardType</string>
+				<string>public.plain-text</string>
+			</array>
+      </dict>
+      <dict>
+        <key>NSMenuItem</key>
+        <dict>
+          <key>default</key>
+          <string>PicSharp • 图片转换</string>
+        </dict>
+        <key>NSMessage</key>
+        <string>nsConvert</string>
+        <key>NSPortName</key>
+        <string>PicSharp</string>
+        <key>NSRequiredContext</key>
+        <dict>
+          <key>NSTextContent</key>
+          <string>FilePaths</string> <!-- 修改为支持多个文件 -->
+        </dict>
+        <key>NSSendFileTypes</key>
+        <array>
+          <string>public.avif</string>
+          <string>public.jpeg</string>
+          <string>public.png</string>
+          <string>public.webp</string>
+        </array>
+        <key>NSUserData</key>
+        <string>q</string>
+      </dict>
+    </array>
+</dict>
+</plist>
