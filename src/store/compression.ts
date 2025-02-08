@@ -11,6 +11,7 @@ interface CompressionAction{
   getFile: (key: string)=>FileInfo | undefined;
   setHasSelected: (hasSelected: boolean)=>void;
   setFiles: (files: FileInfo[])=>void;
+  removeFile: (id: string)=>void;
   clearFiles: ()=>void;
   setFileMap: (fileMap: Map<string, FileInfo>)=>void;
   clearFileMap: ()=>void;
@@ -35,6 +36,19 @@ const useCompressionStore = create<CompressionState & CompressionAction>(
     },
     clearFiles: ()=>{
       set({ files: [] });
+    },
+    removeFile: (id: string)=>{
+      const targetIndex = get().files.findIndex(file=>file.id === id)
+      if(targetIndex !== -1){
+        get().files.splice(targetIndex,1)
+        get().fileMap.delete(id)
+        const selectedFiles = get().selectedFiles.filter(file=>file !== id)
+        set({ 
+          files: [...get().files],
+          fileMap: new Map(get().fileMap),
+          selectedFiles
+        })
+      }
     },
     setFileMap: (fileMap: Map<string, FileInfo>)=>{
       set({ fileMap });

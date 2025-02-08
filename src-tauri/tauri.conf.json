@@ -16,8 +16,8 @@
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
         "title": "PicSharp",
-        "width": 1366,
-        "height": 960,
+        "width": 1002,
+        "height": 670,
         "center": true
       }
     ],
@@ -42,6 +42,7 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "category": "Productivity",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -49,8 +50,42 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "embedBootstrapper"
+      }
+    },
     "macOS": {
-      "entitlements": "./Info.plist"
-    }
+      "entitlements": "./Info.plist",
+      "minimumSystemVersion": "12.0"
+    },
+    "linux": {
+      "deb": {
+        "section": "text"
+      }
+    },
+    "fileAssociations": [
+      {
+        "name": "image",
+        "ext": [
+          "png",
+          "jpg",
+          "jpeg",
+          "webp",
+          "avif"
+        ],
+        "description": "Image file",
+        "mimeType": "image/*",
+        "role": "Editor"
+      },
+      {
+        "name": "Folder",
+        "ext": [],
+        "description": "Folder file",
+        "mimeType": "folder",
+        "role": "Editor"
+      }
+    ]
   }
 }

@@ -16,8 +16,8 @@ function ImgTag(props: ImgTagProps) {
       return <Tag bordered={false} color="green">JPEG</Tag>;
     case 'webp':
       return <Tag bordered={false} color="cyan">WEBP</Tag>;
-    case 'svg':
-      return <Tag bordered={false} color="purple">SVG</Tag>;
+    case 'avif':
+      return <Tag bordered={false} color="purple">AVIF</Tag>;
     default:
       return null;
   }

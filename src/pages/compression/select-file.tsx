@@ -1,4 +1,4 @@
-import {memo,useCallback,useEffect,useRef} from 'react';
+import {memo,useCallback,useEffect,useRef,useContext} from 'react';
 import { useAsyncEffect } from 'ahooks';
 import { UnlistenFn } from '@tauri-apps/api/event';
 import {isFunction,isEmpty} from 'radash';
@@ -9,9 +9,15 @@ import useAppStore from '../../store/app.store';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import {ImagePlus} from 'lucide-react'
 import useCompressionStore from '../../store/compression';
+import { CompressionContext } from '.';
+
 const validExts = ['png', 'jpg', 'jpeg', 'webp']
 
 function SelectFile(){
+  const {
+    progressRef
+  } = useContext(CompressionContext)
+
   const dragDropController = useRef<UnlistenFn | null>(null);
   const {
     setHasSelected,
@@ -21,6 +27,10 @@ function SelectFile(){
 
 	const handleFiles = async (files: string[] | null) => {
 		if(isEmpty(files)) return;
+		progressRef.current?.show(true)
+		// setTimeout(()=>{
+		// 	progressRef.current?.done()
+		// },5000)
 		const {
 			files: fileInfos,
 			fileMap
@@ -28,6 +38,9 @@ function SelectFile(){
 		setHasSelected(true);
 		setFiles(fileInfos);
 		setFileMap(fileMap);
+		setTimeout(()=>{
+			progressRef.current?.done()
+		},100)
 	}
 
   const handleSelectFile = useCallback(async() => {
