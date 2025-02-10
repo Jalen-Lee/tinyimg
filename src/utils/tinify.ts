@@ -1,4 +1,7 @@
 import { upload } from '@tauri-apps/plugin-upload';
+import { isValidArray } from '@/utils';
+import { draw } from 'radash'
+
 
 export namespace Tinify{
 	export interface ApiCompressResult{
@@ -7,12 +10,12 @@ export namespace Tinify{
 			type:string;
 		};
 		output:{
+			width:number;
 			height:number;
 			ratio:number;
 			size:number;
 			type:string;
 			url:string;
-			width:number;
 		};
 	}
 	export interface CompressResult extends ApiCompressResult{
@@ -32,14 +35,14 @@ export class Tinify{
 
 	public async compress(filePtah: string,mime:string):Promise<Tinify.CompressResult>{
 		return new Promise<Tinify.CompressResult>(async(resolve,reject)=>{
-			const apiKey = this.apiKey64s.get(this.apiKeys[0]) || '';
-			if(!apiKey){
-				return reject(new Error('[AccountError]: Authentication failed. Have you set the API Key? Verify your API key.'))
+			if(!isValidArray(this.apiKeys)){
+				return reject(new TypeError('TinyPNG API Keys is empty'))
 			}
 			try{
+				const apiKey = draw(this.apiKeys);
 				const headers = new Map<string,string>();
 				headers.set('Content-Type',mime)
-				headers.set('Authorization',`Basic ${apiKey}`)
+				headers.set('Authorization',`Basic ${this.apiKey64s.get(apiKey)}`)
 				const result = await upload(
 					`${Tinify.API_ENDPOINT}/shrink`,
 					filePtah,

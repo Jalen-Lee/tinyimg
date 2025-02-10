@@ -9,10 +9,20 @@ import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
 import { writeText} from '@tauri-apps/plugin-clipboard-manager';
 import { toast } from 'sonner';
-
+import { IScheduler } from '@/utils/scheduler';
+import { cn } from '@/lib/utils';
 
 export interface FileCardProps {
-  data: FileInfo
+  id: string,
+  name: string,
+  ext: string,
+  size: number,
+  compressedSize: number,
+  formatSize: string,
+  formatCompressedSize: string,
+  compressRate: string,
+  compressStatus: IScheduler.TaskStatus,
+  assetPath: string,
 }
 
 const items: MenuProps['items'] = [
@@ -40,26 +50,26 @@ const items: MenuProps['items'] = [
 ];
 
 function FileCard(props: FileCardProps) {
-  const { data } = props;
+  const { id,name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate } = props;
   const { removeFile } = useCompressionStore(useSelector(['removeFile']))
 
   const handleFileCardMenuClick:MenuProps['onClick'] = useCallback(async ({ key }) => {
     switch(key){
       case 'open_file':
-        openPath(data.id)
+        openPath(id)
         break;
       case 'reveal_in_finder':
-        revealItemInDir(data.id)
+        revealItemInDir(id)
         break;
       case 'delete':
-        removeFile(data.id)
+        removeFile(id)
         break;
       case 'copy_path':
-        await writeText(data.id)
+        await writeText(id)
         toast.success('File path copied to clipboard!')
         break;
     }
-  }, [data.id, removeFile])
+  }, [id, removeFile])
 
   return (
     <Dropdown
@@ -75,22 +85,47 @@ function FileCard(props: FileCardProps) {
       <div className="group relative overflow-hidden rounded-lg border bg-white hover:shadow-lg transition-all duration-300">
         <div className="aspect-[4/3] overflow-hidden relative bg-gray-100 flex items-center justify-center">
           <div className="absolute top-2 left-2">
-            <CheckboxGroup.Item value={data.id}/>
+            <CheckboxGroup.Item value={id}/>
           </div>
           <div className="absolute bottom-2 left-2">
-            <ImgTag type={data.ext} />
+            <ImgTag type={ext} />
           </div>
           <img
-            src={data.assetPath}
-            alt={data.name}
+            src={assetPath}
+            alt={name}
             className="aspect-auto object-contain"
             loading="lazy"
           />
         </div>
         <div className="p-2">
-          <h3 className="font-medium text-gray-900 text-ellipsis overflow-hidden whitespace-nowrap max-w-[100%]">{data.name}</h3>
+          <h3 className="font-medium text-gray-900 text-ellipsis overflow-hidden whitespace-nowrap max-w-[100%]">{name}</h3>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">{data.formatSize}</span>
+            <div className="flex items-center gap-1">
+              <span className={cn(
+                'text-sm text-gray-500',
+                compressStatus === IScheduler.TaskStatus.Completed &&
+                formatCompressedSize && "line-through"
+              )}>{formatSize}</span>
+              {
+                compressStatus === IScheduler.TaskStatus.Completed &&
+                formatCompressedSize && (
+                  <span className="text-sm text-gray-500">{formatCompressedSize}</span>
+                )
+              }
+            </div>
+            {
+              compressStatus === IScheduler.TaskStatus.Completed &&
+              compressRate && (
+                <div className="flex items-center gap-1">
+                  <span className={
+                    cn(
+                      'text-sm text-gray-500',
+                      compressedSize < size ? 'text-green-500' : 'text-red-500'
+                    )
+                  }>{compressRate}</span>
+                </div>
+              )
+            }
           </div>
         </div>
       </div>

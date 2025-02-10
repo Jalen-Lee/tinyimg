@@ -1,8 +1,7 @@
 import { memo } from 'react';
-import { Sparkles,Save} from "lucide-react"
-import { Button } from "@/components/ui/button"
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
+import CompressButton from './toolbar-compress';
 
 export interface ToolbarProps {
 
@@ -15,17 +14,13 @@ function Toolbar(props: ToolbarProps){
     <div className="max-w-sm mx-auto p-2 bg-white rounded-xl border shadow-lg">
       <div className="flex justify-center items-center gap-2">
 
-        <Button
+        {/* <Button
           size="icon"
         >
           <Save className="h-4 w-4" />
-        </Button>
+        </Button> */}
 
-        <Button
-          size="icon"
-        >
-          <Sparkles className="h-4 w-4" />
-        </Button>
+        <CompressButton />
       </div>
     </div>
   )

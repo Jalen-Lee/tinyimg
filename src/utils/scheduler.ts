@@ -1,11 +1,8 @@
-import { isEmpty } from "radash";
-import { isAvailableTinifyExt } from ".";
-import { Tinify } from "./tinify"
-import { download } from '@tauri-apps/plugin-upload';
-
+import EventEmitter from 'eventemitter3';
 export namespace IScheduler {
   
   export type Task = ()=>Promise<TaskResult>;
+
   export type TaskResult = any;
   
   export enum TaskStatus {
@@ -20,68 +17,31 @@ export interface SchedulerOptions{
   concurrency:number;
 }
 
-export default class Scheduler{
+export default class Scheduler extends EventEmitter{
+  static Events = {
+    Fulfilled: 'fulfilled',
+    Rejected: 'rejected',
+  }
 
+  private running = false;
   private concurrency:number
   private tasks:Array<()=>Promise<IScheduler.TaskResult>> = []
   private results:Array<IScheduler.TaskResult> = []
-  private fulfilledCb:((res:IScheduler.TaskResult)=>void) | undefined
-  private rejectedCb:((res:IScheduler.TaskResult)=>void) | undefined
   
   constructor(options:SchedulerOptions){
+    super();
     this.concurrency = options.concurrency || 6;
   }
 
-  public setTasks(tasks:Array<IScheduler.Task>){
-    // this.tasks = tasks.map(task=>{
-    //   if(isAvailableTinifyExt(task.ext)){
-    //     return ()=>{
-    //       return new Promise( async(resolve,reject)=>{
-    //         this.tinify
-    //         .compress(task.path,task.mime)
-    //         .then((res)=>{
-    //           resolve({
-    //             id:task.path,
-    //             status:ProcessorType.TaskStatus.Completed,
-    //             type:ProcessorType.TaskType.Tinify,
-    //             path: res.output.url,
-    //             assetPath:res.output.url,
-    //             size:res.output.size
-    //           })
-    //         })
-    //         .catch((error)=>{
-    //           reject({
-    //             id:task.path,
-    //             status:ProcessorType.TaskStatus.Failed,
-    //             type:ProcessorType.TaskType.Tinify,
-    //             errorMessage:error.toString()
-    //           })
-    //         })
-    //       })
-    //     }
-    //   }else{
-    //     return async ()=>{
-    //       return {
-    //         type:ProcessorType.TaskType.Local,
-    //         id:task.path,
-    //         path:'',
-    //         assetPath:'',
-    //         size:0
-    //       } as ProcessorType.TaskResult
-    //     }
-    //   }
-    // })
+  public addTasks(...tasks:IScheduler.Task[]){
+    if(this.running) return;
+    this.tasks.push(...tasks);
+    return this;
+  }
+
+  public setTasks(tasks:IScheduler.Task[]){
+    if(this.running) return;
     this.tasks = tasks;
-    return this;
-  }
-
-  public setFulfilledCb(cb:(res:IScheduler.TaskResult)=>void){
-    this.fulfilledCb = cb;
-    return this;
-  }
-
-  public setRejectedCb(cb:(res:IScheduler.TaskResult)=>void){
-    this.rejectedCb = cb;
     return this;
   }
 
@@ -97,11 +57,11 @@ export default class Scheduler{
       const p = Promise.resolve()
         .then(() => task())
         .then((res) => {
-          this.fulfilledCb?.(res);
+          this.emit(Scheduler.Events.Fulfilled,res);
           return res;
         })
         .catch((res) => {
-          this.rejectedCb?.(res);
+          this.emit(Scheduler.Events.Rejected,res);
         });
       ret.push(p);
 
@@ -122,30 +82,10 @@ export default class Scheduler{
 
 
   async run() {
+    if(this.running) return;
+    this.running = true;
     this.results = await this.execute();
-    return this;
+    this.running = false;
+    return this.results;
   }
-
-  
-
-  // save(cb:(res:ProcessorType.TaskResult)=>void){
-  //   if(!isEmpty(this.taskResults)){
-  //     this.taskResults.filter(Boolean).forEach(async task=>{
-  //       if(task.type === ProcessorType.TaskType.Tinify){
-  //         const res = await download(
-  //           task.path,
-  //           './path/to/save/my/file.txt'
-  //         );
-  //       }
-  //     })
-  //   }
-  // }
-
-  // saveTo(filePath:string){
-
-  // }
-
-  // saveAsZip(filename:string){
-
-  // }
 }

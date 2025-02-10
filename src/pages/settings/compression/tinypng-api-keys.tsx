@@ -15,7 +15,7 @@ import * as z from 'zod';
 import { debounce } from 'radash';
 import { useI18n } from '@/i18n';
 import { Trans } from 'react-i18next';
-
+import { SETTINGS_FILE_NAME,SettingsKey } from '@/constants';
 
 import {
   Form,
@@ -39,8 +39,7 @@ function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const { settings, setSettings } = useAppStore(useSelector(['settings', 'setSettings']));
-  const tinypngApiKeys = settings.get('tinypng.apiKeys') || [];
-  console.log("tinypngApiKeys", tinypngApiKeys);
+  const tinypngApiKeys = settings.get(SettingsKey['settings.compression.task_config.tinypng.api_keys']) || [];
 
   const form = useForm<TinypngApiKeyFormData>({
     resolver: zodResolver(tinypngApiKeySchema),
@@ -62,7 +61,7 @@ function SettingsCompressionTinyPngApiKeys() {
         message: 'API Key already exists',
       });
     }else {
-      setSettings('tinypng.apiKeys', [
+      setSettings(SettingsKey['settings.compression.task_config.tinypng.api_keys'], [
         ...tinypngApiKeys,
         {
           ...data,
@@ -70,13 +69,14 @@ function SettingsCompressionTinyPngApiKeys() {
         }
       ]);
       setIsAddDialogOpen(false);
+      form.reset();
       toast.success('API Key added successfully!')
     }
   };
 
   const handleDelete = (apiKey: string) => {
     const newApiKeys = tinypngApiKeys.filter((item: any) => item.api_key !== apiKey);
-    setSettings('tinypng.apiKeys', newApiKeys);
+    setSettings(SettingsKey['settings.compression.task_config.tinypng.api_keys'], newApiKeys);
     toast.success('API Key deleted successfully!')
   }
 

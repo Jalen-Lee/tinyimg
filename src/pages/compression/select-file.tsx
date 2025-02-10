@@ -1,7 +1,7 @@
 import {memo,useCallback,useEffect,useRef,useContext} from 'react';
 import { useAsyncEffect } from 'ahooks';
 import { UnlistenFn } from '@tauri-apps/api/event';
-import {isFunction,isEmpty} from 'radash';
+import {isFunction} from 'radash';
 import { open } from '@tauri-apps/plugin-dialog';
 import { parseFiles } from '../../utils/fs';
 import useSelector from '@/hooks/useSelector';
@@ -10,6 +10,7 @@ import { getCurrentWebview } from '@tauri-apps/api/webview';
 import {ImagePlus} from 'lucide-react'
 import useCompressionStore from '../../store/compression';
 import { CompressionContext } from '.';
+import {isValidArray} from '@/utils';
 
 const validExts = ['png', 'jpg', 'jpeg', 'webp']
 
@@ -22,22 +23,21 @@ function SelectFile(){
   const {
     setHasSelected,
     setFiles,
-    setFileMap
-  } = useCompressionStore(useSelector(['setHasSelected','setFiles','setFileMap']))
+    setSelectedFiles
+  } = useCompressionStore(useSelector(['setHasSelected','setFiles','setSelectedFiles']))
 
 	const handleFiles = async (files: string[] | null) => {
-		if(isEmpty(files)) return;
+		if(!isValidArray(files)) return;
 		progressRef.current?.show(true)
 		// setTimeout(()=>{
 		// 	progressRef.current?.done()
 		// },5000)
 		const {
 			files: fileInfos,
-			fileMap
 		} = await parseFiles(files!,validExts);
 		setHasSelected(true);
 		setFiles(fileInfos);
-		setFileMap(fileMap);
+		setSelectedFiles(fileInfos.map(file=>file.id))
 		setTimeout(()=>{
 			progressRef.current?.done()
 		},100)

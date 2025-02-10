@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import EventEmitter from 'eventemitter3';
 import { load,Store } from '@tauri-apps/plugin-store';
-import { SettingsKey, SettingsCompressionTaskConfigOutputMode } from '@/constants';
+import { SETTINGS_FILE_NAME,SettingsKey, SettingsCompressionTaskConfigOutputMode } from '@/constants';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -22,7 +22,7 @@ const useAppStore = create<AppState & AppAction>(
     settingStore: null,
     settings: new Map(),
     loadSettings: async ()=>{
-      const store = await load('settings.json', { autoSave: false });
+      const store = await load(SETTINGS_FILE_NAME, { autoSave: false });
       if(!(await store.has(SettingsKey['settings.compression.task_config.concurrency']))){
         await store.set(SettingsKey['settings.compression.task_config.concurrency'], 6);
       }

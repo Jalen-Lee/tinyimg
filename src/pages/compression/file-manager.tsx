@@ -9,7 +9,7 @@ export interface FileManagerProps {
 }
 
 function FileManager(props: FileManagerProps){
-  const {files,setSelectedFiles} = useCompressionStore(useSelector(['files','setSelectedFiles']))
+  const {files,selectedFiles,setSelectedFiles} = useCompressionStore(useSelector(['files','selectedFiles','setSelectedFiles']))
 
   const handleSelect = (value:string[])=>{
     setSelectedFiles(value)
@@ -17,13 +17,22 @@ function FileManager(props: FileManagerProps){
 
   return (
     <div className="h-full relative flex flex-col">
-      <CheckboxGroup.Root className="flex-1 p-4" highContrast color="gray" onValueChange={handleSelect}>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 contain-layout">
+      <CheckboxGroup.Root className="flex-1 p-4" value={selectedFiles} highContrast color="gray" onValueChange={handleSelect}>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 contain-layout">
           {
             files.map((file) => (
               <FileCard 
                 key={file.id} 
-                data={file}
+                id={file.id}
+                name={file.name}
+                ext={file.ext}
+                size={file.size}
+                compressedSize={file.compressedSize}
+                formatSize={file.formatSize}
+                formatCompressedSize={file.formatCompressedSize}
+                compressStatus={file.compressStatus}
+                assetPath={file.assetPath}
+                compressRate={file.compressRate}
               />
             ))
           }
