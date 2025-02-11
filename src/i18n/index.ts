@@ -2,8 +2,6 @@ import enUS from './locales/en-US';
 import zhCN from './locales/zh-CN';
 import i18next from 'i18next';
 import { initReactI18next,useTranslation } from 'react-i18next';
-import { load } from '@tauri-apps/plugin-store';
-
 declare module 'i18next' {
   interface CustomTypeOptions {
     resources: {
@@ -22,26 +20,14 @@ export const useI18n = () => {
   }
 };
 
-(async function () {
-  await i18next.use(initReactI18next).init({
-    lng: 'en-US',
-    fallbackLng: 'en-US',
-    resources: {
-      'en-US': { translation: enUS },
-      'zh-CN': { translation: zhCN }
-    },
-    interpolation: {
-      escapeValue: false
-    }
-  });
-  const settingStore = await load('settings.json', { autoSave: false });
-  const uaLang = window.navigator.language || 'en-US';
-  const settingLang = await settingStore.get<string>('language');
-  if(settingLang){
-    i18next.changeLanguage(settingLang);
-  }else{
-    i18next.changeLanguage(uaLang);
-    await settingStore.set('language', uaLang);
-    await settingStore.save();
+i18next.use(initReactI18next).init({
+  lng: 'en-US',
+  fallbackLng: 'en-US',
+  resources: {
+    'en-US': { translation: enUS },
+    'zh-CN': { translation: zhCN }
+  },
+  interpolation: {
+    escapeValue: false
   }
-})();
+});

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useI18n } from '@/i18n';
-import useAppStore from '@/store/app.store';
+import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { Input } from '@/components/ui/input';
 import { SettingsKey } from '@/constants';
@@ -10,11 +10,29 @@ import { Switch } from '@/components/ui/switch';
 
 function SettingsCompressionTaskConfigSave() {
   const t = useI18n();
-  const {settings,setSettings} = useAppStore(useSelector(['settings','setSettings']));
+  const {
+    compression_quick_save: quickSave,
+    compression_tasks_save_compress_rate_limit: hasLimit,
+    compression_tasks_save_compress_rate_limit_threshold: threshold,
+    set
+  } = useSettingsStore(useSelector([
+    SettingsKey.compression_quick_save,
+    SettingsKey.compression_tasks_save_compress_rate_limit,
+    SettingsKey.compression_tasks_save_compress_rate_limit_threshold,
+    'set'
+  ]));
 
-  const handleValueChange = debounce({ delay: 1000 }, (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuickSaveChange = (checked: boolean) => {
+    set(SettingsKey.compression_quick_save, checked);
+  };
+
+  const handleLimitChange = (checked: boolean) => {
+    set(SettingsKey.compression_tasks_save_compress_rate_limit, checked);
+  }
+
+  const handleThresholdChange = debounce({ delay: 1000 }, (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    setSettings(SettingsKey['settings.compression.task_config.concurrency'], value);
+    set(SettingsKey.compression_tasks_save_compress_rate_limit_threshold, value);
   });
   
   return (
@@ -24,7 +42,7 @@ function SettingsCompressionTaskConfigSave() {
           <CardTitle className="text-lg">{t('settings.compression.task_config.quick_save.title')}</CardTitle>
           <CardDescription>{t('settings.compression.task_config.quick_save.description')}</CardDescription>
         </div>
-        <Switch  onCheckedChange={() => {}} />
+        <Switch checked={quickSave} onCheckedChange={handleQuickSaveChange} />
       </CardHeader>
       <CardHeader className="flex flex-row justify-between gap-x-10">
         <div>
@@ -32,15 +50,19 @@ function SettingsCompressionTaskConfigSave() {
           <CardDescription>{t('settings.compression.task_config.save_compress_rate.description')}</CardDescription>
         </div>
         <div className='flex items-center gap-x-2'>
-          <Switch onCheckedChange={() => {}} />
-          <Input 
-            type="number" 
-            defaultValue={settings.get(SettingsKey['settings.compression.task_config.save_compress_rate'])} 
-            onChange={handleValueChange} 
-            className="w-[180px]"
-            min={1}
-            max={100}
-          />
+          {
+            hasLimit && (
+              <Input 
+                type="number" 
+                defaultValue={threshold} 
+                onChange={handleThresholdChange} 
+                className="w-[180px]"
+                min={1}
+                max={100}
+              />
+            )
+          }
+          <Switch checked={hasLimit} onCheckedChange={handleLimitChange} />
         </div>
       </CardHeader>
     </>

@@ -6,7 +6,7 @@ import { DataTable } from '@/components/data-table';
 import { memo, useState,useMemo } from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Trash, KeyRound } from 'lucide-react';
-import useAppStore from '@/store/app.store';
+import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,7 @@ import * as z from 'zod';
 import { debounce } from 'radash';
 import { useI18n } from '@/i18n';
 import { Trans } from 'react-i18next';
-import { SETTINGS_FILE_NAME,SettingsKey } from '@/constants';
+import { SettingsKey } from '@/constants';
 
 import {
   Form,
@@ -38,8 +38,7 @@ type TinypngApiKeyFormData = z.infer<typeof tinypngApiKeySchema>;
 function SettingsCompressionTinyPngApiKeys() {
   const t = useI18n();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const { settings, setSettings } = useAppStore(useSelector(['settings', 'setSettings']));
-  const tinypngApiKeys = settings.get(SettingsKey['settings.compression.task_config.tinypng.api_keys']) || [];
+  const { compression_tinypng_api_keys: tinypngApiKeys, set } = useSettingsStore(useSelector([SettingsKey.compression_tinypng_api_keys,'set']));
 
   const form = useForm<TinypngApiKeyFormData>({
     resolver: zodResolver(tinypngApiKeySchema),
@@ -61,7 +60,7 @@ function SettingsCompressionTinyPngApiKeys() {
         message: 'API Key already exists',
       });
     }else {
-      setSettings(SettingsKey['settings.compression.task_config.tinypng.api_keys'], [
+      set(SettingsKey.compression_tinypng_api_keys, [
         ...tinypngApiKeys,
         {
           ...data,
@@ -76,7 +75,7 @@ function SettingsCompressionTinyPngApiKeys() {
 
   const handleDelete = (apiKey: string) => {
     const newApiKeys = tinypngApiKeys.filter((item: any) => item.api_key !== apiKey);
-    setSettings(SettingsKey['settings.compression.task_config.tinypng.api_keys'], newApiKeys);
+    set(SettingsKey.compression_tinypng_api_keys, newApiKeys);
     toast.success('API Key deleted successfully!')
   }
 

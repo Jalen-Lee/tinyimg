@@ -1,18 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import { useTranslation } from 'react-i18next';
 import { useI18n } from '../../../i18n';
 import {memo} from 'react'
-import useAppStore from '../../../store/app.store';
+import useSettingsStore from '../../../store/settings';
 import useSelector from '@/hooks/useSelector';
+import { SettingsKey } from '@/constants';
 
 const languages = [
   { value: 'zh-CN', label: '简体中文' },
@@ -22,10 +22,11 @@ const languages = [
 export default memo(function SettingsGeneralLanguage() {
   const { i18n } = useTranslation();
   const t = useI18n();
-  const {getSettings,setSettings} = useAppStore(useSelector(['getSettings','setSettings']));
-  const handleChangeLanguage = (value: string) => {
+  const {language,set} = useSettingsStore(useSelector([SettingsKey.language,'set']));
+
+  const handleChangeLanguage = async (value: string) => {
+    await set(SettingsKey.language, value);
     i18n.changeLanguage(value);
-    setSettings('language', value);
   }
   return (
     <Card >
@@ -34,7 +35,7 @@ export default memo(function SettingsGeneralLanguage() {
           <CardTitle className="text-lg">{t('settings.general.language')}</CardTitle>
           <CardDescription>{t('settings.general.language.description')}</CardDescription>
         </div>
-        <Select defaultValue={getSettings('language')} onValueChange={handleChangeLanguage}>
+        <Select value={language} defaultValue={language} onValueChange={handleChangeLanguage}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Language"/>
           </SelectTrigger>
@@ -49,8 +50,6 @@ export default memo(function SettingsGeneralLanguage() {
           </SelectContent>
         </Select>
       </CardHeader>
-      {/* <CardContent>
-      </CardContent> */}
     </Card>
   );
 });

@@ -4,7 +4,8 @@ use std::{
     path::{Path, PathBuf},
     sync::{Arc, Mutex},
 };
-use tauri::{AppHandle, Emitter, Listener};
+use tauri::path::BaseDirectory;
+use tauri::{AppHandle, Emitter, Listener, Manager};
 use tauri_plugin_fs::FsExt;
 mod file_ext;
 mod fs;
@@ -72,11 +73,30 @@ impl Inspect {
     }
 }
 
+fn init_settings(app: &AppHandle) {
+    let settings_path = app.path().app_data_dir().unwrap().join("settings.json");
+    if !settings_path.exists() {
+        let default_settings = app
+            .path()
+            .resolve("resources/settings.default.json", BaseDirectory::Resource)
+            .unwrap();
+        let app_default_settings_path = app
+            .path()
+            .app_data_dir()
+            .unwrap()
+            .join("settings.default.json");
+        let _ = std::fs::copy(&default_settings, settings_path);
+        let _ = std::fs::copy(&default_settings, app_default_settings_path);
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
+            init_settings(&app.handle());
+
             let inspect = Inspect {
                 app: app.handle().clone(),
                 ready: false,

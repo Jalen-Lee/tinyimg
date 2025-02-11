@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { useI18n } from '@/i18n';
-import useAppStore from '@/store/app.store';
+import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { Input } from '@/components/ui/input';
 import { SettingsKey, SettingsCompressionTaskConfigOutputMode } from '@/constants';
@@ -15,24 +15,30 @@ import { openPath } from '@tauri-apps/plugin-opener';
 
 function SettingsCompressionTaskConfigOutput() {
   const t = useI18n();
-  const {settings,setSettings} = useAppStore(useSelector(['settings','setSettings']));
+  const { 
+    compression_tasks_output_mode: outputMode,
+    compression_tasks_output_mode_save_as_file_suffix: saveAsFileSuffix,
+    compression_tasks_output_mode_save_to_folder: saveToFolder,
+    set
+  } = useSettingsStore(useSelector([
+    SettingsKey.compression_tasks_output_mode,
+    SettingsKey.compression_tasks_output_mode_save_as_file_suffix,
+    SettingsKey.compression_tasks_output_mode_save_to_folder,
+    'set'
+  ]));
 
   const languages = [
-    { value: SettingsCompressionTaskConfigOutputMode['overwrite'], label: t('settings.compression.task_config.output.mode.overwrite') },
-    { value: SettingsCompressionTaskConfigOutputMode['new_file'], label: t('settings.compression.task_config.output.mode.new_file') },
-    { value: SettingsCompressionTaskConfigOutputMode['new_folder'], label: t('settings.compression.task_config.output.mode.new_folder') },
+    { value: SettingsCompressionTaskConfigOutputMode.overwrite, label: t('settings.compression.task_config.output.mode.overwrite') },
+    { value: SettingsCompressionTaskConfigOutputMode.save_as_new_file, label: t('settings.compression.task_config.output.mode.new_file') },
+    { value: SettingsCompressionTaskConfigOutputMode.save_to_new_folder, label: t('settings.compression.task_config.output.mode.new_folder') },
   ]
 
-  const outputMode = settings.get(SettingsKey['settings.compression.task_config.output.mode']);
-  const newFile = settings.get(SettingsKey['settings.compression.task_config.output.mode.new_file']);
-  const newFolder = settings.get(SettingsKey['settings.compression.task_config.output.mode.new_folder']);
-
   const handleModeChange = (value: SettingsCompressionTaskConfigOutputMode) => {
-    setSettings(SettingsKey['settings.compression.task_config.output.mode'], value);
+    set(SettingsKey.compression_tasks_output_mode, value);
   }
 
   const handleSuffixChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSettings(SettingsKey['settings.compression.task_config.output.mode.new_file.suffix'], e.target.value);
+    set(SettingsKey.compression_tasks_output_mode_save_as_file_suffix, e.target.value);
   }
 
   const handleChooseFolder = async () => {
@@ -41,7 +47,7 @@ function SettingsCompressionTaskConfigOutput() {
       directory: true,
     });
     if(file){
-      setSettings(SettingsKey['settings.compression.task_config.output.mode.new_folder'], file);
+      set(SettingsKey.compression_tasks_output_mode_save_to_folder, file);
     }
   }
 
@@ -68,7 +74,7 @@ function SettingsCompressionTaskConfigOutput() {
         </Select>
       </CardHeader>
       {
-        outputMode === SettingsCompressionTaskConfigOutputMode['new_file'] && (
+        outputMode === SettingsCompressionTaskConfigOutputMode.save_as_new_file && (
           <CardHeader>
             <div className="flex justify-between gap-x-10 items-center">
               <div>
@@ -79,7 +85,7 @@ function SettingsCompressionTaskConfigOutput() {
                 type="text" 
                 placeholder={t('settings.compression.task_config.output.mode.new_file.title')} 
                 className="w-[180px]"
-                defaultValue={newFile || ''}
+                defaultValue={saveAsFileSuffix || ''}
                 onChange={debounce({delay: 1000}, handleSuffixChange)}
               />
             </div>
@@ -87,7 +93,7 @@ function SettingsCompressionTaskConfigOutput() {
         )
       }
       {
-        outputMode === SettingsCompressionTaskConfigOutputMode['new_folder'] && (
+        outputMode === SettingsCompressionTaskConfigOutputMode.save_to_new_folder && (
           <CardHeader>
             <div className="flex justify-between gap-x-10 items-center">
               <div>
@@ -96,8 +102,8 @@ function SettingsCompressionTaskConfigOutput() {
               </div>
               <div className="flex flex-col gap-y-2 items-end">
                 <Button className='w-[auto]' size={'sm'} onClick={handleChooseFolder}>{t('settings.compression.task_config.output.mode.new_folder.choose')}</Button>
-                <Tooltip content={newFolder} side="bottom">
-                  <p onClick={() => openPath(newFolder)} className="cursor-pointer underline text-sm text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-[300px]">{newFolder}</p>
+                <Tooltip content={saveToFolder} side="bottom">
+                  <p onClick={() => openPath(saveToFolder)} className="cursor-pointer underline text-sm text-gray-500 text-ellipsis overflow-hidden whitespace-nowrap max-w-[300px]">{saveToFolder}</p>
                 </Tooltip>
               </div>
             </div>

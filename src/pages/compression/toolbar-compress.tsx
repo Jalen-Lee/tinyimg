@@ -97,9 +97,9 @@ function ToolbarCompress(props: ToolbarCompressProps){
         let target = ''
         if(outputMode === SettingsCompressionTaskConfigOutputMode.overwrite){
           target = file.path
-        }else if(outputMode === SettingsCompressionTaskConfigOutputMode.new_file){
+        }else if(outputMode === SettingsCompressionTaskConfigOutputMode.save_as_new_file){
           target = `${file.parentDir}/${file.name}${newFileSuffix ? `${newFileSuffix}` : ''}.${file.ext}`
-        }else if(outputMode === SettingsCompressionTaskConfigOutputMode.new_folder){
+        }else if(outputMode === SettingsCompressionTaskConfigOutputMode.save_to_new_folder){
           target = `${newFolderPath}/${file.name}.${file.ext}`
         }
         return {
