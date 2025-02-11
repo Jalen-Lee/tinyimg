@@ -10,6 +10,7 @@ export namespace IScheduler {
     Processing = 'processing',
     Completed = 'completed',
     Failed = 'failed',
+    Done = 'done',
   }
 }
 

@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import EventEmitter from 'eventemitter3';
 import { load,Store } from '@tauri-apps/plugin-store';
 import { SETTINGS_FILE_NAME,SettingsKey, SettingsCompressionTaskConfigOutputMode } from '@/constants';
+import { downloadDir } from '@tauri-apps/api/path';
 
 interface AppState {
   eventEmitter: EventEmitter;
@@ -28,6 +29,12 @@ const useAppStore = create<AppState & AppAction>(
       }
       if(!(await store.has(SettingsKey['settings.compression.task_config.output.mode']))){
         await store.set(SettingsKey['settings.compression.task_config.output.mode'], SettingsCompressionTaskConfigOutputMode['overwrite']);
+      }
+      if(!(await store.has(SettingsKey['settings.compression.task_config.output.mode.new_file']))){
+        await store.set(SettingsKey['settings.compression.task_config.output.mode.new_file'], '_compressed');
+      }
+      if(!(await store.has(SettingsKey['settings.compression.task_config.output.mode.new_folder']))){
+        await store.set(SettingsKey['settings.compression.task_config.output.mode.new_folder'], await downloadDir());
       }
       const entries = await store.entries();
       set({ 

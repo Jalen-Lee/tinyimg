@@ -1,4 +1,4 @@
-{
+export default {
   "nav.home": "首页",
   "nav.compression": "图片压缩",
   "home": "首页",
@@ -40,7 +40,7 @@
   "settings.compression.task_config.concurrency.description": "图片压缩处理最大并行任务数量。",
   "settings.compression.task_config.output.title": "保存模式",
   "settings.compression.task_config.output.description": "图片压缩完成后，以什么方式保存到文件系统。",
-  "settings.compression.task_config.output.mode.new_file": "新文件",
+  "settings.compression.task_config.output.mode.new_file": "保存为新文件",
   "settings.compression.task_config.output.mode.overwrite": "覆盖原文件",
   "settings.compression.task_config.output.mode.new_folder": "保存到新文件夹",
   "settings.compression.task_config.output.mode.new_file.title": "文件名后缀",
@@ -53,6 +53,20 @@
   "settings.compression.task_config.metadata.copyright": "版权信息",
   "settings.compression.task_config.metadata.creator": "创建者信息",
   "settings.compression.task_config.metadata.location": "位置信息",
+  "settings.compression.task_config.quick_save.title": "快速保存",
+  "settings.compression.task_config.quick_save.description": "压缩完成后是否自动保存到文件系统。",
+  "settings.compression.task_config.save_compress_rate.title": "压缩率阈值",
+  "settings.compression.task_config.save_compress_rate.description": "开启后，执行保存操作时，如果图片压缩率低于设置的阈值时，不进行保存。",
   "page.compression.process.actions.save": "保存",
-  "page.compression.process.actions.compress": "压缩"
+  "page.compression.process.actions.compress": "压缩",
+
+  "processing": "处理中",
+  "compressed": "压缩完成",
+  "saved": "保存成功",
+  "failed": "失败",
+
+  // Toast/Notification massages
+  "tips.tinypng_api_keys_not_configured": "TinyPNG API密钥未配置，请在“设置->图片压缩->TinyPNG API密钥”中配置。",
+  "tips.compress_completed": "{{num}}张图片压缩完成",
+  "tips.save_completed": "{{num}}张图片保存成功",
 }

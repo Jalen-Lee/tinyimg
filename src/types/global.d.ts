@@ -4,6 +4,7 @@ declare global {
     id: string;
     name: string;
     path: string;
+    parentDir: string;
     assetPath: string;
     size: number;
     formatSize: string;
@@ -14,6 +15,7 @@ declare global {
     ext: string;
     compressedSize: number;
     formatCompressedSize: string;
+    compressedPath?: string;
     compressRate: string;
     compressStatus: ProcessorType.TaskStatus;
     errorMessage?: string;

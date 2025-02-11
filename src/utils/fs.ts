@@ -1,5 +1,5 @@
 import { lstat } from '@tauri-apps/plugin-fs';
-import { basename,extname } from '@tauri-apps/api/path';
+import { basename,extname,dirname } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import mime from 'mime';
 import { IScheduler } from '@/utils/scheduler';
@@ -16,7 +16,6 @@ export function formatFileSize(bytes: number): string {
   return `${(bytes / Math.pow(k, i)).toFixed(2)}${units[i]}`;
 }
 
-
 export async function parseFiles(filePaths:string[],validExts:string[]){
 	const files: FileInfo[] = []
 	const fileMap = new Map<string, FileInfo>()
@@ -27,16 +26,17 @@ export async function parseFiles(filePaths:string[],validExts:string[]){
 				path: filePath,
 				valid_exts: validExts
 			})
-			console.log('candidates',candidates)
 			if(candidates.length > 0){
 				for(const candidate of candidates){
 					const info = await lstat(candidate)
 					const ext = await extname(candidate)
+					const parentDir = await dirname(candidate)
 					const fileInfo: FileInfo = {
 						id: candidate,
 						path: candidate,
 						assetPath: convertFileSrc(candidate),
 						name: await basename(candidate),
+						parentDir,
 						size: info.size,
 						formatSize: formatFileSize(info.size),
 						isDir: info.isDirectory,
@@ -55,12 +55,14 @@ export async function parseFiles(filePaths:string[],validExts:string[]){
 			}
 		}else{
 			const ext = await extname(filePath)
+			const parentDir = await dirname(filePath)
 			if(!validExts.includes(ext)) continue;
 			const fileInfo: FileInfo = {
 				id: filePath,
 				path: filePath,
 				assetPath: convertFileSrc(filePath),
 				name: await basename(filePath),
+				parentDir,
 				size: info.size,
 				formatSize: formatFileSize(info.size),
 				isDir: info.isDirectory,

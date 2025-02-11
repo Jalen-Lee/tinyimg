@@ -1,4 +1,4 @@
-{
+export default {
   "nav.home": "Home",
   "nav.compression": "Compression",
   "home": "Home",
@@ -40,9 +40,9 @@
   "settings.compression.task_config.concurrency.description": "The maximum number of concurrent image compression tasks.",
   "settings.compression.task_config.output.title": "Save Mode",
   "settings.compression.task_config.output.description": "The mode of saving the compressed image to the file system after compression.",
-  "settings.compression.task_config.output.mode.new_file": "New File",
-  "settings.compression.task_config.output.mode.overwrite": "Overwrite Original File",
-  "settings.compression.task_config.output.mode.new_folder": "Save to New Folder",
+  "settings.compression.task_config.output.mode.new_file": "Save as new file",
+  "settings.compression.task_config.output.mode.overwrite": "Overwrite original file",
+  "settings.compression.task_config.output.mode.new_folder": "Save to new folder",
   "settings.compression.task_config.output.mode.new_file.title": "File Name Suffix",
   "settings.compression.task_config.output.mode.new_file.description": "The suffix of the new file name is added to the original file name, for example: the original file name is test.jpg, the suffix is _compressed, then the new file name is test_compressed.jpg.",
   "settings.compression.task_config.output.mode.new_folder.title": "Target Folder",
@@ -53,6 +53,20 @@
   "settings.compression.task_config.metadata.copyright": "Copyright",
   "settings.compression.task_config.metadata.creator": "Creation",
   "settings.compression.task_config.metadata.location": "Location",
+  "settings.compression.task_config.quick_save.title": "Quick Save",
+  "settings.compression.task_config.quick_save.description": "Whether to save the compressed image to the file system after compression.",
+  "settings.compression.task_config.save_compress_rate.title": "Compress Rate Threshold",
+  "settings.compression.task_config.save_compress_rate.description": "When enabled, the save operation will not be performed if the image compression rate is lower than the threshold.",
   "page.compression.process.actions.save": "Save",
-  "page.compression.process.actions.compress": "Compress"
+  "page.compression.process.actions.compress": "Compress",
+
+  "processing": "Processing",
+  "compressed": "Compressed",
+  "saved": "Saved",
+  "failed": "Failed",
+
+  // Toast/Notification massages
+  "tips.tinypng_api_keys_not_configured": "TinyPNG API keys not configured, please configure the TinyPNG API keys in the “Settings -> Compression -> TinyPNG API Keys”.",
+  "tips.compress_completed": "{{num}} images compressed",
+  "tips.save_completed": "{{num}} images saved",
 }

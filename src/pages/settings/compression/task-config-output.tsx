@@ -18,8 +18,8 @@ function SettingsCompressionTaskConfigOutput() {
   const {settings,setSettings} = useAppStore(useSelector(['settings','setSettings']));
 
   const languages = [
-    { value: SettingsCompressionTaskConfigOutputMode['new_file'], label: t('settings.compression.task_config.output.mode.new_file') },
     { value: SettingsCompressionTaskConfigOutputMode['overwrite'], label: t('settings.compression.task_config.output.mode.overwrite') },
+    { value: SettingsCompressionTaskConfigOutputMode['new_file'], label: t('settings.compression.task_config.output.mode.new_file') },
     { value: SettingsCompressionTaskConfigOutputMode['new_folder'], label: t('settings.compression.task_config.output.mode.new_folder') },
   ]
 
@@ -67,9 +67,9 @@ function SettingsCompressionTaskConfigOutput() {
             </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent>
-        {
-          outputMode === SettingsCompressionTaskConfigOutputMode['new_file'] && (
+      {
+        outputMode === SettingsCompressionTaskConfigOutputMode['new_file'] && (
+          <CardHeader>
             <div className="flex justify-between gap-x-10 items-center">
               <div>
                 <CardTitle className="text-lg">{t('settings.compression.task_config.output.mode.new_file.title')}</CardTitle>
@@ -83,10 +83,12 @@ function SettingsCompressionTaskConfigOutput() {
                 onChange={debounce({delay: 1000}, handleSuffixChange)}
               />
             </div>
-          )
-        }
-        {
-          outputMode === SettingsCompressionTaskConfigOutputMode['new_folder'] && (
+          </CardHeader>
+        )
+      }
+      {
+        outputMode === SettingsCompressionTaskConfigOutputMode['new_folder'] && (
+          <CardHeader>
             <div className="flex justify-between gap-x-10 items-center">
               <div>
                 <CardTitle className="text-lg">{t('settings.compression.task_config.output.mode.new_folder.title')}</CardTitle>
@@ -99,9 +101,9 @@ function SettingsCompressionTaskConfigOutput() {
                 </Tooltip>
               </div>
             </div>
-          )
-        }
-      </CardContent>
+          </CardHeader>
+        )
+      }
     </>
   );
 }

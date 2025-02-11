@@ -1,5 +1,5 @@
-import enUS from './locales/en-US.json';
-import zhCN from './locales/zh-CN.json';
+import enUS from './locales/en-US';
+import zhCN from './locales/zh-CN';
 import i18next from 'i18next';
 import { initReactI18next,useTranslation } from 'react-i18next';
 import { load } from '@tauri-apps/plugin-store';

@@ -77,7 +77,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .setup(|app| {
-            let mut inspect = Inspect {
+            let inspect = Inspect {
                 app: app.handle().clone(),
                 ready: false,
                 queued: Vec::new(),

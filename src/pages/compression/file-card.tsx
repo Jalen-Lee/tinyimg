@@ -1,7 +1,6 @@
 import {memo,useCallback} from 'react';
 import ImgTag from '@/components/img-tag';
 import { CheckboxGroup } from '@radix-ui/themes';
-import { Button } from '@/components/ui/button';
 import {SquareArrowOutUpRight,Trash2Icon,FolderOpenIcon,ClipboardCopy} from 'lucide-react'
 import { Dropdown, MenuProps } from 'antd';
 import { openPath,revealItemInDir } from '@tauri-apps/plugin-opener';
@@ -11,6 +10,8 @@ import { writeText} from '@tauri-apps/plugin-clipboard-manager';
 import { toast } from 'sonner';
 import { IScheduler } from '@/utils/scheduler';
 import { cn } from '@/lib/utils';
+import { Badge } from '@radix-ui/themes';
+import { useI18n } from '@/i18n';
 
 export interface FileCardProps {
   id: string,
@@ -51,6 +52,7 @@ const items: MenuProps['items'] = [
 
 function FileCard(props: FileCardProps) {
   const { id,name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate } = props;
+  const t = useI18n();
   const { removeFile } = useCompressionStore(useSelector(['removeFile']))
 
   const handleFileCardMenuClick:MenuProps['onClick'] = useCallback(async ({ key }) => {
@@ -84,6 +86,32 @@ function FileCard(props: FileCardProps) {
     >
       <div className="group relative overflow-hidden rounded-lg border bg-white hover:shadow-lg transition-all duration-300">
         <div className="aspect-[4/3] overflow-hidden relative bg-gray-100 flex items-center justify-center">
+          <div className="absolute top-1 right-2">
+            {
+              compressStatus === IScheduler.TaskStatus.Processing &&
+              <Badge color="orange" variant="solid">
+                {t("processing")}
+              </Badge>
+            }
+            {
+              compressStatus === IScheduler.TaskStatus.Completed &&
+              <Badge color="green" variant="solid">
+                {t("compressed")}
+              </Badge>
+            }
+            {
+              compressStatus === IScheduler.TaskStatus.Failed &&
+              <Badge color="red" variant="solid">
+                {t("failed")}
+              </Badge>
+            }
+            {
+              compressStatus === IScheduler.TaskStatus.Done &&
+              <Badge color="blue" variant="solid">
+                {t('saved')}
+              </Badge>
+            }
+          </div>
           <div className="absolute top-2 left-2">
             <CheckboxGroup.Item value={id}/>
           </div>
@@ -102,27 +130,31 @@ function FileCard(props: FileCardProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1">
               <span className={cn(
-                'text-sm text-gray-500',
-                compressStatus === IScheduler.TaskStatus.Completed &&
+                'text-[12px] text-gray-500',
+                (compressStatus === IScheduler.TaskStatus.Completed || compressStatus === IScheduler.TaskStatus.Done) &&
                 formatCompressedSize && "line-through"
               )}>{formatSize}</span>
               {
-                compressStatus === IScheduler.TaskStatus.Completed &&
+                (compressStatus === IScheduler.TaskStatus.Completed || compressStatus === IScheduler.TaskStatus.Done) &&
                 formatCompressedSize && (
-                  <span className="text-sm text-gray-500">{formatCompressedSize}</span>
+                  <span className="text-[12px] text-gray-500">{formatCompressedSize}</span>
                 )
               }
             </div>
             {
-              compressStatus === IScheduler.TaskStatus.Completed &&
+              (compressStatus === IScheduler.TaskStatus.Completed || compressStatus === IScheduler.TaskStatus.Done) &&
               compressRate && (
                 <div className="flex items-center gap-1">
                   <span className={
                     cn(
-                      'text-sm text-gray-500',
+                      'text-[12px] text-gray-500',
                       compressedSize < size ? 'text-green-500' : 'text-red-500'
                     )
-                  }>{compressRate}</span>
+                  }>{
+                    compressedSize <= size ?
+                      `-${compressRate}` :
+                      `+${compressRate}`
+                  }</span>
                 </div>
               )
             }
