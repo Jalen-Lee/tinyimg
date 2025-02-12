@@ -16,6 +16,8 @@ export default {
   "oss": "OSS",
   "oss.description": "Integrate Amazon S3 object storage service, providing secure and reliable cloud storage solutions, supporting image upload, management, and distribution.",
   "copyright": "Copyright & Terms",
+  "settings.reset_all": "Reset",
+  "settings.reset_all_confirm": "Are you sure you want to reset all application configuration?",
   "settings.compression.title": "Compression",
   "settings.compression.description": "Manage the compression settings and preferences.",
   "settings.compression.tinypng_api_keys.title": "TinyPNG Api Keys",
@@ -61,12 +63,13 @@ export default {
   "page.compression.process.actions.compress": "Compress",
 
   "processing": "Processing",
+  "saving": "Saving",
   "compressed": "Compressed",
   "saved": "Saved",
   "failed": "Failed",
-
   // Toast/Notification massages
   "tips.tinypng_api_keys_not_configured": "TinyPNG API keys not configured, please configure the TinyPNG API keys in the “Settings -> Compression -> TinyPNG API Keys”.",
   "tips.compress_completed": "{{num}} images compressed",
   "tips.save_completed": "{{num}} images saved",
+  "tips.settings_reset_success": "Application configuration reset successfully",
 }

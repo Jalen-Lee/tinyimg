@@ -85,8 +85,8 @@ function SettingsCompressionTaskConfigOutput() {
                 type="text" 
                 placeholder={t('settings.compression.task_config.output.mode.new_file.title')} 
                 className="w-[180px]"
-                defaultValue={saveAsFileSuffix || ''}
-                onChange={debounce({delay: 1000}, handleSuffixChange)}
+                value={saveAsFileSuffix || ''}
+                onChange={handleSuffixChange}
               />
             </div>
           </CardHeader>

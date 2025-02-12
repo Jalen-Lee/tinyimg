@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import { SettingsHeader } from '../header';
-import SettingsGeneralLanguage from './language';
+import Language from './language';
 import { useI18n } from '../../../i18n';
 
 export default function SettingsGeneral() {
@@ -12,7 +12,7 @@ export default function SettingsGeneral() {
         text={t('general.description')}
       />
       <Separator />
-      <SettingsGeneralLanguage />
+      <Language />
     </div>
   );
 }

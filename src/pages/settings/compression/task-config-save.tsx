@@ -5,7 +5,6 @@ import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { Input } from '@/components/ui/input';
 import { SettingsKey } from '@/constants';
-import { debounce } from 'radash';
 import { Switch } from '@/components/ui/switch';
 
 function SettingsCompressionTaskConfigSave() {
@@ -30,10 +29,10 @@ function SettingsCompressionTaskConfigSave() {
     set(SettingsKey.compression_tasks_save_compress_rate_limit, checked);
   }
 
-  const handleThresholdChange = debounce({ delay: 1000 }, (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleThresholdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     set(SettingsKey.compression_tasks_save_compress_rate_limit_threshold, value);
-  });
+  }
   
   return (
     <>
@@ -54,11 +53,12 @@ function SettingsCompressionTaskConfigSave() {
             hasLimit && (
               <Input 
                 type="number" 
-                defaultValue={threshold} 
+                value={threshold} 
                 onChange={handleThresholdChange} 
-                className="w-[180px]"
-                min={1}
-                max={100}
+                className="w-[100px] h-7"
+                min={0}
+                max={1}
+                step={0.1}
               />
             )
           }

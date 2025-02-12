@@ -24,14 +24,17 @@ interface SettingsState {
 }
 
 interface SettingsAction{
-  init: ()=>Promise<void>;
+  settingsFilePath: string;
+  defaultSettingsFilePath: string;
+  init: (reset?: boolean)=>Promise<void>;
   set: (key: SettingsKey, value: any)=>Promise<void>;
   reset: ()=>Promise<void>;
 }
 
 const useSettingsStore = create<SettingsState & SettingsAction>(
   (set, get) => ({
-
+    settingsFilePath: '',
+    defaultSettingsFilePath: '',
     [SettingsKey.language]: 'en-US',
     [SettingsKey.compression_tinypng_api_keys]: [],
     [SettingsKey.compression_tasks_concurrency]: 6,
@@ -46,8 +49,14 @@ const useSettingsStore = create<SettingsState & SettingsAction>(
       SettingsCompressionTaskConfigMetadata.creator,
       SettingsCompressionTaskConfigMetadata.location, 
     ],
-    init: async ()=>{
-      const store = await load(SETTINGS_FILE_NAME, { autoSave: false });
+    init: async (reset)=>{
+      const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
+      const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
+      set({settingsFilePath, defaultSettingsFilePath});
+      const store = await load(SETTINGS_FILE_NAME);
+      if(reset){
+        await store.reload();
+      }
       const entries = await store.entries();
       for(const [key, value] of entries){
         if(key === SettingsKey.compression_tasks_output_mode_save_to_folder){
@@ -84,10 +93,8 @@ const useSettingsStore = create<SettingsState & SettingsAction>(
     },
 
     reset: async ()=>{
-      const settingsFilePath = await join(await appDataDir(), SETTINGS_FILE_NAME);
-      const defaultSettingsFilePath = await join(await appDataDir(), DEFAULT_SETTINGS_FILE_NAME);
-      await copyFile(defaultSettingsFilePath, settingsFilePath);
-      await get().init();
+      await copyFile(get().defaultSettingsFilePath, get().settingsFilePath);
+      await get().init(true);
     }
   })
 );

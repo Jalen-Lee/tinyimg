@@ -13,9 +13,9 @@ function SettingsCompressionMetadata() {
   const {compression_retain_metadata: metadata = [],set} = useSettingsStore(useSelector([SettingsKey.compression_retain_metadata,'set']));
 
 
-  const handleValueChange = debounce({ delay: 1000 }, (value: string[]) => {
+  const handleValueChange = (value: string[]) => {
     set(SettingsKey.compression_retain_metadata, value);
-  });
+  }
 
   return (
     <Card>
@@ -25,7 +25,7 @@ function SettingsCompressionMetadata() {
           <CardDescription>{t('settings.compression.task_config.metadata.description')}</CardDescription>
         </div>
         <div>
-          <CheckboxGroup.Root defaultValue={metadata} color="gray" highContrast onValueChange={handleValueChange}>
+          <CheckboxGroup.Root value={metadata} color="gray" highContrast onValueChange={handleValueChange}>
             <CheckboxGroup.Item value={SettingsCompressionTaskConfigMetadata.copyright}>{t('settings.compression.task_config.metadata.copyright')}</CheckboxGroup.Item>
             <CheckboxGroup.Item value={SettingsCompressionTaskConfigMetadata.creator}>{t('settings.compression.task_config.metadata.creator')}</CheckboxGroup.Item>
             <CheckboxGroup.Item value={SettingsCompressionTaskConfigMetadata.location}>{t('settings.compression.task_config.metadata.location')}</CheckboxGroup.Item>

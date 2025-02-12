@@ -1,6 +1,5 @@
 import { memo } from 'react';
 import { Card} from '@/components/ui/card';
-import { useI18n } from '@/i18n';
 import Concurrency from './task-config-concurrency';
 import Output from './task-config-output';
 import Save from './task-config-save';

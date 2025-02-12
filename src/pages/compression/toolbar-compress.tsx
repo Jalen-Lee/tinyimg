@@ -19,8 +19,8 @@ export interface ToolbarCompressProps {
 }
 
 function ToolbarCompress(props: ToolbarCompressProps){
-  const {selectedFiles,fileMap,files,setFiles} = useCompressionStore(useSelector([
-    'selectedFiles','fileMap','files','setFiles'
+  const {selectedFiles,fileMap,files,setFiles,setInCompressing,setInSaving} = useCompressionStore(useSelector([
+    'selectedFiles','fileMap','files','setFiles','setInCompressing','setInSaving'
   ]))
   const t = useI18n()
 
@@ -35,29 +35,30 @@ function ToolbarCompress(props: ToolbarCompressProps){
   },[selectedFiles,fileMap])
 
   const handleCompress = async () => {
+    setInCompressing(true);
     const tasks = selectedFiles.filter(id => fileMap.get(id)?.compressStatus === IScheduler.TaskStatus.Pending).map(id => {
       const file = fileMap.get(id)
       if(file && file.compressStatus === IScheduler.TaskStatus.Pending){
+        file.compressStatus = IScheduler.TaskStatus.Processing;
         return {
           filePtah:file.path,
           mimeType:file.mimeType
         }
       }
     })
+    setFiles([...files])
 
     const store = await getStore(SETTINGS_FILE_NAME);
-    const concurrency = await store.get<number>(SettingsKey['settings.compression.task_config.concurrency']);
-		const apiKeys = await store.get<{api_key:string}[]>(SettingsKey['settings.compression.task_config.tinypng.api_keys']);
+    const concurrency = await store.get<number>(SettingsKey.compression_tasks_concurrency);
+		const apiKeys = await store.get<{api_key:string}[]>(SettingsKey.compression_tinypng_api_keys);
     if(!isValidArray(apiKeys)){
       toast.error(t("tips.tinypng_api_keys_not_configured"));
       return;
     }
 
-    const compressor = new Compressor({
+    await new Compressor({
       concurrency,
-    })
-
-    await compressor.compress(tasks,{
+    }).compress(tasks,{
       tinypngApiKeys:apiKeys.map(item=>item.api_key),
       onFulfilled:(res)=>{
         const targetFile = fileMap.get(res.id);
@@ -82,18 +83,20 @@ function ToolbarCompress(props: ToolbarCompressProps){
       }
     });
     toast.success(t("tips.compress_completed",{num:tasks.length}));
+    setInCompressing(false);
   }
 
   const handleSave = async () => {
     const store = await getStore(SETTINGS_FILE_NAME);
-    const concurrency = await store.get<number>(SettingsKey['settings.compression.task_config.concurrency']);
-    const outputMode = await store.get<string>(SettingsKey['settings.compression.task_config.output.mode']);
-    const newFileSuffix = await store.get<string>(SettingsKey['settings.compression.task_config.output.mode.new_file.suffix']);
-    const newFolderPath = await store.get<string>(SettingsKey['settings.compression.task_config.output.mode.new_folder.path']);
+    const concurrency = await store.get<number>(SettingsKey.compression_tasks_concurrency);
+    const outputMode = await store.get<string>(SettingsKey.compression_tasks_output_mode);
+    const newFileSuffix = await store.get<string>(SettingsKey.compression_tasks_output_mode_save_as_file_suffix);
+    const newFolderPath = await store.get<string>(SettingsKey.compression_tasks_output_mode_save_to_folder);
 
     const tasks = selectedFiles.filter(id => fileMap.get(id)?.compressStatus === IScheduler.TaskStatus.Completed).map(id => {
       const file = fileMap.get(id)
       if(file && file.compressStatus === IScheduler.TaskStatus.Completed){
+        file.compressStatus = IScheduler.TaskStatus.Saving;
         let target = ''
         if(outputMode === SettingsCompressionTaskConfigOutputMode.overwrite){
           target = file.path
@@ -109,14 +112,12 @@ function ToolbarCompress(props: ToolbarCompressProps){
         }
       }
     })
+    setFiles([...files])
 
-    const compressor = new Compressor({
+    await new Compressor({
       concurrency,
-    })
-
-    await compressor.save(tasks,{
+    }).save(tasks,{
       onFulfilled:(res)=>{
-        console.log("res",res)
         const targetFile = fileMap.get(res.id);
         if(targetFile){
           targetFile.compressStatus = IScheduler.TaskStatus.Done;
@@ -137,6 +138,7 @@ function ToolbarCompress(props: ToolbarCompressProps){
       }
     });
     toast.success(t("tips.save_completed",{num:tasks.length}));
+    setInSaving(false);
   }
 
   return (

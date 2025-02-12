@@ -94,6 +94,12 @@ function FileCard(props: FileCardProps) {
               </Badge>
             }
             {
+              compressStatus === IScheduler.TaskStatus.Saving &&
+              <Badge color="orange" variant="solid">
+                {t("saving")}
+              </Badge>
+            }
+            {
               compressStatus === IScheduler.TaskStatus.Completed &&
               <Badge color="green" variant="solid">
                 {t("compressed")}

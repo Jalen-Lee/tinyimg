@@ -35,7 +35,7 @@ export default memo(function SettingsGeneralLanguage() {
           <CardTitle className="text-lg">{t('settings.general.language')}</CardTitle>
           <CardDescription>{t('settings.general.language.description')}</CardDescription>
         </div>
-        <Select value={language} defaultValue={language} onValueChange={handleChangeLanguage}>
+        <Select value={language} onValueChange={handleChangeLanguage}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Language"/>
           </SelectTrigger>

@@ -5,7 +5,6 @@ import useSettingsStore from '@/store/settings';
 import useSelector from '@/hooks/useSelector';
 import { Input } from '@/components/ui/input';
 import { SettingsKey } from '@/constants';
-import { debounce } from 'radash';
 
 function SettingsCompressionTaskConfigConcurrency() {
   const t = useI18n();
@@ -14,10 +13,10 @@ function SettingsCompressionTaskConfigConcurrency() {
     set
   } = useSettingsStore(useSelector([SettingsKey.compression_tasks_concurrency,'set']));
 
-  const handleValueChange = debounce({ delay: 1000 }, (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     set(SettingsKey.compression_tasks_concurrency, value);
-  });
+  };
   
   return (
     <CardHeader className="flex flex-row justify-between gap-x-10">
@@ -27,7 +26,7 @@ function SettingsCompressionTaskConfigConcurrency() {
       </div>
       <Input 
         type="number" 
-        defaultValue={concurrency} 
+        value={concurrency}
         onChange={handleValueChange} 
         className="w-[180px]"
         min={1}

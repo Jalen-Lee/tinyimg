@@ -8,11 +8,13 @@ interface CompressionState {
   fileMap: Map<string, FileInfo>;
   selectedFiles: string[];
   inCompressing: boolean;
+  inSaving: boolean;
 }
 
 interface CompressionAction{
   setHasSelected: (hasSelected: boolean)=>void;
   setInCompressing: (inCompressing: boolean)=>void;
+  setInSaving: (inSaving: boolean)=>void;
   getFileById: (id: string)=>FileInfo | undefined;
   setFiles: (files: FileInfo[])=>void;
   removeFile: (id: string)=>void;
@@ -29,12 +31,17 @@ const useCompressionStore = create<CompressionState & CompressionAction>(
     fileMap: new Map(),
     selectedFiles: [],
     inCompressing: false,
+    inSaving: false,
 
     setHasSelected: (hasSelected: boolean)=>{
       set({ hasSelected });
     },
     setInCompressing: (inCompressing: boolean)=>{
       set({ inCompressing });
+    },
+
+    setInSaving: (inSaving: boolean)=>{
+      set({ inSaving });
     },
 
     getFileById: (id: string)=>{

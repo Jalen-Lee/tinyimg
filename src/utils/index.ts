@@ -11,3 +11,7 @@ export function isAvailableImageExt(ext: string) {
 export function isValidArray(arr: unknown){
   return Array.isArray(arr) && arr.length > 0;
 }
+
+export function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

@@ -1,6 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import { SettingsHeader } from '../header';
-import SettingsCompressionTinyPng from './tinypng';
+import TinyPng from './tinypng';
 import TaskConfig from './task-config';
 import Metadata from './metadata';
 import { useI18n } from '@/i18n';
@@ -14,7 +14,7 @@ export default function SettingsCompression() {
         text={t('settings.compression.description')}
       />
       <Separator />
-      <SettingsCompressionTinyPng />
+      <TinyPng />
       <TaskConfig />
       <Metadata />
     </div>

@@ -16,6 +16,8 @@ export default {
   "oss": "云存储",
   "oss.description": "集成Amazon S3对象存储服务，提供安全可靠的云端存储方案，支持图片的上传、管理和分发。",
   "copyright": "版权&条款",
+  "settings.reset_all": "重置",
+  "settings.reset_all_confirm": "确定要重置所有应用配置吗？",
   "settings.compression.title": "图片压缩",
   "settings.compression.description": "管理图片压缩的配置和偏好。",
   "settings.compression.tinypng_api_keys.title": "TinyPNG API密钥",
@@ -61,6 +63,7 @@ export default {
   "page.compression.process.actions.compress": "压缩",
 
   "processing": "处理中",
+  "saving": "保存中",
   "compressed": "压缩完成",
   "saved": "保存成功",
   "failed": "失败",
@@ -69,4 +72,5 @@ export default {
   "tips.tinypng_api_keys_not_configured": "TinyPNG API密钥未配置，请在“设置->图片压缩->TinyPNG API密钥”中配置。",
   "tips.compress_completed": "{{num}}张图片压缩完成",
   "tips.save_completed": "{{num}}张图片保存成功",
+  "tips.settings_reset_success": "应用配置重置完成",
 }
