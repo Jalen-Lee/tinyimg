@@ -26,7 +26,7 @@ function ToolbarInfo(){
       return acc + file.size
     },0)
 
-    const compressRate = totalSavedVolume > 0 ? ((totalFilesSize - totalSavedVolume) / totalFilesSize * 100).toFixed(2) : '0'
+    const compressRate = totalSavedVolume > 0 ? (totalSavedVolume / totalFilesSize * 100).toFixed(2) : '0'
 
     return (
       <div className="flex items-center">
