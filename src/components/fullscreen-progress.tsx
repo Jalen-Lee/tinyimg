@@ -47,7 +47,7 @@ const FullscreenProgress = forwardRef<
           const increment = (currentTime: number) => {
             if (indicatorRef.current) {
               const elapsedTime = (currentTime - startTime) / 1000; // 转换为秒
-              const maxTime = 10; // 最大时间100秒
+              const maxTime = 60; // 最大时间100秒
               const t = Math.min(elapsedTime / maxTime, 1); // 计算进度时间比例
               progress = easeOutCirc(t) * 100; // 使用easeOutCirc函数计算进度
               if (progress < 100 && !isDoneRef.current) {
