@@ -1,4 +1,4 @@
-import {memo,useCallback} from 'react';
+import {memo} from 'react';
 import ImgTag from '@/components/img-tag';
 import { CheckboxGroup } from '@radix-ui/themes';
 import {SquareArrowOutUpRight,Trash2Icon,FolderOpenIcon,ClipboardCopy} from 'lucide-react'
@@ -12,6 +12,7 @@ import { IScheduler } from '@/utils/scheduler';
 import { cn } from '@/lib/utils';
 import { Badge } from '@radix-ui/themes';
 import { useI18n } from '@/i18n';
+import { type } from '@tauri-apps/plugin-os';
 
 export interface FileCardProps {
   id: string,
@@ -24,54 +25,74 @@ export interface FileCardProps {
   compressRate: string,
   compressStatus: IScheduler.TaskStatus,
   assetPath: string,
+  compressedPath: string,
 }
 
-const items: MenuProps['items'] = [
-  {
-    key: 'open_file',
-    label: 'Open File',
-    icon: <SquareArrowOutUpRight className="h-4 w-4" />,
-  },
-  {
-    key: 'reveal_in_finder',
-    label: 'Reveal in Finder',
-    icon: <FolderOpenIcon className="h-4 w-4" />,
-  },
-  {
-    key: 'copy_path',
-    label: 'Copy File Path',
-    icon: <ClipboardCopy className="h-4 w-4" />,
-  },
-  {
-    key: 'delete',
-    label: 'Delete',
-    icon: <Trash2Icon className="h-4 w-4" />,
-    danger: true,
-  },
-];
+enum Action {
+  OpenFile = 'open_file',
+  Reveal = 'reveal',
+  CopyPath = 'copy_path',
+  DeleteInList = 'delete_in_list',
+}
 
 function FileCard(props: FileCardProps) {
-  const { id,name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate } = props;
+  const { id,name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate,compressedPath } = props;
   const t = useI18n();
   const { removeFile } = useCompressionStore(useSelector(['removeFile']))
 
-  const handleFileCardMenuClick:MenuProps['onClick'] = useCallback(async ({ key }) => {
+  const items: MenuProps['items'] = [
+    {
+      key: Action.OpenFile,
+      label: t('compression.file_action.open_file'),
+      icon: <SquareArrowOutUpRight className="h-4 w-4" />,
+    },
+    {
+      key: Action.Reveal,
+      label: type() === 'macos' ? t('compression.file_action.reveal_in_finder') : t('compression.file_action.reveal_in_exploer'),
+      icon: <FolderOpenIcon className="h-4 w-4" />,
+    },
+    {
+      key: Action.CopyPath,
+      label: t('compression.file_action.copy_path'),
+      icon: <ClipboardCopy className="h-4 w-4" />,
+    },
+    {
+      key: Action.DeleteInList,
+      label: t('compression.file_action.delete_in_list'),
+      icon: <Trash2Icon className="h-4 w-4" />,
+      danger: true,
+    },
+  ];
+
+  const handleFileCardMenuClick:MenuProps['onClick'] = async ({ key }) => {
     switch(key){
-      case 'open_file':
-        openPath(id)
+      case Action.OpenFile:
+        if(compressStatus === IScheduler.TaskStatus.Done){
+          openPath(compressedPath)
+        }else{
+          openPath(id)
+        }
         break;
-      case 'reveal_in_finder':
-        revealItemInDir(id)
+      case Action.Reveal:
+        if(compressStatus === IScheduler.TaskStatus.Done){
+          revealItemInDir(compressedPath)
+        }else{
+          revealItemInDir(id)
+        }
         break;
-      case 'delete':
+      case Action.DeleteInList:
         removeFile(id)
         break;
-      case 'copy_path':
-        await writeText(id)
-        toast.success('File path copied to clipboard!')
+      case Action.CopyPath:
+        if(compressStatus === IScheduler.TaskStatus.Done){
+          await writeText(compressedPath)
+        }else{
+          await writeText(id)
+        }
+        toast.success(t('tips.file_path_copied'))
         break;
     }
-  }, [id, removeFile])
+  }
 
   return (
     <Dropdown
@@ -127,7 +148,7 @@ function FileCard(props: FileCardProps) {
           <img
             src={assetPath}
             alt={name}
-            className="aspect-auto object-contain"
+            className="aspect-[4/3] object-contain"
             loading="lazy"
           />
         </div>

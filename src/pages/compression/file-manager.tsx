@@ -18,7 +18,7 @@ function FileManager(props: FileManagerProps){
   return (
     <div className="h-full relative flex flex-col">
       <CheckboxGroup.Root className="flex-1 p-4" value={selectedFiles} highContrast color="gray" onValueChange={handleSelect}>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-6 contain-layout">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-8 contain-layout">
           {
             files.map((file) => (
               <FileCard 
@@ -33,6 +33,7 @@ function FileManager(props: FileManagerProps){
                 compressStatus={file.compressStatus}
                 assetPath={file.assetPath}
                 compressRate={file.compressRate}
+                compressedPath={file.compressedPath}
               />
             ))
           }

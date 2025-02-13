@@ -21,6 +21,7 @@ interface CompressionAction{
   clearFiles: ()=>void;
   setSelectedFiles: (selectedFiles: string[])=>void;
   clearSelectedFiles: ()=>void;
+  reset: ()=>void;
 }
 
 const useCompressionStore = create<CompressionState & CompressionAction>(
@@ -80,6 +81,16 @@ const useCompressionStore = create<CompressionState & CompressionAction>(
     },
     clearSelectedFiles: ()=>{
       set({ selectedFiles: [] });
+    },
+    reset: ()=>{
+      set({
+        hasSelected: false,
+        inCompressing: false,
+        inSaving: false,
+        files: [],
+        fileMap: new Map(),
+        selectedFiles: []
+      });
     }
   })
 );

@@ -61,7 +61,15 @@ export default {
   "settings.compression.task_config.save_compress_rate.description": "开启后，执行保存操作时，如果图片压缩率低于设置的阈值时，不进行保存。",
   "page.compression.process.actions.save": "保存",
   "page.compression.process.actions.compress": "压缩",
-
+  "compression.file_action.open_file": "查看",
+  "compression.file_action.reveal_in_finder": "在Finder中显示",
+  "compression.file_action.reveal_in_exploer": "在文件资源管理器中显示",
+  "compression.file_action.copy_path": "复制文件路径",
+  "compression.file_action.delete_in_list": "从当前列表中删除",
+  "compression.toolbar.info.total_files": "图片数量",
+  "compression.toolbar.info.files_size": "占用空间",
+  "compression.toolbar.info.saved_volume": "节省空间",
+  "compression.toolbar.info.saved_volume_rate": "压缩率",
   "processing": "处理中",
   "saving": "保存中",
   "compressed": "压缩完成",
@@ -71,6 +79,8 @@ export default {
   // Toast/Notification massages
   "tips.tinypng_api_keys_not_configured": "TinyPNG API密钥未配置，请在“设置->图片压缩->TinyPNG API密钥”中配置。",
   "tips.compress_completed": "{{num}}张图片压缩完成",
+  "tips.quick_compress_completed": "{{num}}张图片压缩完成并保存",
   "tips.save_completed": "{{num}}张图片保存成功",
   "tips.settings_reset_success": "应用配置重置完成",
+  "tips.file_path_copied": "文件路径已复制到剪贴板",
 }

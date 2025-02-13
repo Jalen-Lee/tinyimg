@@ -61,7 +61,15 @@ export default {
   "settings.compression.task_config.save_compress_rate.description": "When enabled, the save operation will not be performed if the image compression rate is lower than the threshold.",
   "page.compression.process.actions.save": "Save",
   "page.compression.process.actions.compress": "Compress",
-
+  "compression.file_action.open_file": "View",
+  "compression.file_action.reveal_in_finder": "Reveal in Finder",
+  "compression.file_action.reveal_in_exploer": "Reveal in File Explorer",
+  "compression.file_action.copy_path": "Copy File Path",
+  "compression.file_action.delete_in_list": "Delete in Current List",
+  "compression.toolbar.info.total_files": "Total Files",
+  "compression.toolbar.info.files_size": "Files Size",
+  "compression.toolbar.info.saved_volume": "Saved Volume",
+  "compression.toolbar.info.saved_volume_rate": "Compression Ratio",
   "processing": "Processing",
   "saving": "Saving",
   "compressed": "Compressed",
@@ -70,6 +78,8 @@ export default {
   // Toast/Notification massages
   "tips.tinypng_api_keys_not_configured": "TinyPNG API keys not configured, please configure the TinyPNG API keys in the “Settings -> Compression -> TinyPNG API Keys”.",
   "tips.compress_completed": "{{num}} images compressed",
+  "tips.quick_compress_completed": "{{num}} images compressed and saved",
   "tips.save_completed": "{{num}} images saved",
   "tips.settings_reset_success": "Application configuration reset successfully",
+  "tips.file_path_copied": "File path copied to clipboard",
 }

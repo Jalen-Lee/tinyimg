@@ -12,16 +12,18 @@
         <string>nsCompress</string>
         <key>NSPortName</key>
         <string>PicSharp</string>
-			<key>NSRequiredContext</key>
-			<dict>
-				<key>NSTextContent</key>
-				<string>FilePath</string>
-			</dict>
-			<key>NSSendTypes</key>
-			<array>
-				<string>NSFilenamesPboardType</string>
-				<string>public.plain-text</string>
-			</array>
+        <key>NSRequiredContext</key>
+        <dict>
+          <key>NSTextContent</key>
+          <string>FilePath</string>
+        </dict>
+        <key>NSSendTypes</key>
+        <array>
+          <string>public.avif</string>
+          <string>public.jpeg</string>
+          <string>public.png</string>
+          <string>public.webp</string>
+        </array>
       </dict>
       <dict>
         <key>NSMenuItem</key>

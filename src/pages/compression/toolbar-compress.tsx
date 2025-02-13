@@ -7,7 +7,7 @@ import { IScheduler } from "@/utils/scheduler";
 import { getStore } from '@tauri-apps/plugin-store';
 import { SETTINGS_FILE_NAME,SettingsKey,SettingsCompressionTaskConfigOutputMode } from '@/constants';
 import { isValidArray } from "@/utils";
-import Compressor from "@/utils/compressor";
+import Compressor, { ICompressor } from "@/utils/compressor";
 import { toast } from "sonner";
 import { formatFileSize } from "@/utils/fs";
 import { isString } from "radash";
@@ -19,71 +19,129 @@ export interface ToolbarCompressProps {
 }
 
 function ToolbarCompress(props: ToolbarCompressProps){
-  const {selectedFiles,fileMap,files,setFiles,setInCompressing,setInSaving} = useCompressionStore(useSelector([
-    'selectedFiles','fileMap','files','setFiles','setInCompressing','setInSaving'
+  const {selectedFiles,fileMap,files,setFiles,setInCompressing,setInSaving,inCompressing,inSaving} = useCompressionStore(useSelector([
+    'selectedFiles','fileMap','files','setFiles','setInCompressing','setInSaving','inCompressing','inSaving'
   ]))
   const t = useI18n()
 
   const disabledCompress = useMemo(() => {
-    return selectedFiles.length === 0 || 
+    return selectedFiles.length === 0 ||
+    inCompressing ||
+    inSaving ||
     !selectedFiles.some(file => fileMap.get(file)?.compressStatus === IScheduler.TaskStatus.Pending)
-  },[selectedFiles,fileMap])
+  },[selectedFiles,fileMap,inCompressing,inSaving])
 
   const disabledSave = useMemo(() => {
-    return selectedFiles.length === 0 || 
+    return selectedFiles.length === 0 ||
+    inCompressing ||
+    inSaving ||
     !selectedFiles.some(file => fileMap.get(file)?.compressStatus === IScheduler.TaskStatus.Completed)
-  },[selectedFiles,fileMap])
+  },[selectedFiles,fileMap,inSaving,inCompressing])
 
   const handleCompress = async () => {
     setInCompressing(true);
-    const tasks = selectedFiles.filter(id => fileMap.get(id)?.compressStatus === IScheduler.TaskStatus.Pending).map(id => {
+    const store = await getStore(SETTINGS_FILE_NAME);
+    const concurrency = await store.get<number>(SettingsKey.compression_tasks_concurrency);
+    const outputMode = await store.get<string>(SettingsKey.compression_tasks_output_mode);
+    const newFileSuffix = await store.get<string>(SettingsKey.compression_tasks_output_mode_save_as_file_suffix);
+    const newFolderPath = await store.get<string>(SettingsKey.compression_tasks_output_mode_save_to_folder);
+		const apiKeys = await store.get<{api_key:string}[]>(SettingsKey.compression_tinypng_api_keys);
+    const quickSave = await store.get<boolean>(SettingsKey.compression_quick_save) || false;
+
+    const tasks = selectedFiles
+    .map<ICompressor.QuickCompressTask | ICompressor.CompressTask>(id => {
       const file = fileMap.get(id)
       if(file && file.compressStatus === IScheduler.TaskStatus.Pending){
         file.compressStatus = IScheduler.TaskStatus.Processing;
-        return {
-          filePtah:file.path,
-          mimeType:file.mimeType
+        if(quickSave){
+          let savePtah = ''
+          if(outputMode === SettingsCompressionTaskConfigOutputMode.overwrite){
+            savePtah = file.path
+          }else if(outputMode === SettingsCompressionTaskConfigOutputMode.save_as_new_file){
+            savePtah = `${file.parentDir}/${file.name}${newFileSuffix ? `${newFileSuffix}` : ''}.${file.ext}`
+          }else if(outputMode === SettingsCompressionTaskConfigOutputMode.save_to_new_folder){
+            savePtah = `${newFolderPath}/${file.name}.${file.ext}`
+          }
+          return {
+            filePtah:file.path,
+            mimeType:file.mimeType,
+            target:savePtah
+          } as ICompressor.QuickCompressTask
+        }else{
+          return {
+            filePtah:file.path,
+            mimeType:file.mimeType
+          } as ICompressor.CompressTask
         }
       }
-    })
+    }).filter(Boolean)
     setFiles([...files])
 
-    const store = await getStore(SETTINGS_FILE_NAME);
-    const concurrency = await store.get<number>(SettingsKey.compression_tasks_concurrency);
-		const apiKeys = await store.get<{api_key:string}[]>(SettingsKey.compression_tinypng_api_keys);
     if(!isValidArray(apiKeys)){
       toast.error(t("tips.tinypng_api_keys_not_configured"));
       return;
     }
 
-    await new Compressor({
-      concurrency,
-    }).compress(tasks,{
-      tinypngApiKeys:apiKeys.map(item=>item.api_key),
-      onFulfilled:(res)=>{
-        const targetFile = fileMap.get(res.id);
-        if(targetFile){
-          targetFile.compressStatus = IScheduler.TaskStatus.Completed;
-          targetFile.compressedSize = res.output.size;
-          targetFile.formatCompressedSize = formatFileSize(res.output.size);
-          targetFile.compressRate = `${((targetFile.size - targetFile.compressedSize) / targetFile.size * 100).toFixed(2)}%`;
-          targetFile.compressedPath = res.output.url;
-          setFiles([...files])
-        }
-      },
-      onRejected:(res)=>{
-        const targetFile = fileMap.get(res.id);
-        if(targetFile){
-          targetFile.compressStatus = IScheduler.TaskStatus.Failed;
-          if(isString(res)){
-            targetFile.errorMessage = res;
+    if(quickSave){
+      await new Compressor({
+        concurrency,
+      }).quickCompress(tasks as ICompressor.QuickCompressTask[],{
+        tinypngApiKeys:apiKeys.map(item=>item.api_key),
+        onFulfilled:(res)=>{
+          const targetFile = fileMap.get(res.id);
+          if(targetFile){
+            targetFile.compressStatus = IScheduler.TaskStatus.Done;
+            targetFile.compressedSize = res.output.size;
+            targetFile.formatCompressedSize = formatFileSize(res.output.size);
+            targetFile.compressRate = `${((targetFile.size - targetFile.compressedSize) / targetFile.size * 100).toFixed(2)}%`;
+            targetFile.assetPath = convertFileSrc(res.target);
+            targetFile.compressedPath = res.target;
+            setFiles([...files])
           }
-          setFiles([...files])
+        },
+        onRejected:(res)=>{
+          const targetFile = fileMap.get(res.id);
+          if(targetFile){
+            targetFile.compressStatus = IScheduler.TaskStatus.Failed;
+            if(isString(res)){
+              targetFile.errorMessage = res;
+            }
+            setFiles([...files])
+          }
         }
-      }
-    });
-    toast.success(t("tips.compress_completed",{num:tasks.length}));
-    setInCompressing(false);
+      });
+      toast.success(t("tips.quick_compress_completed",{num:tasks.length}));
+      setInCompressing(false);
+    }else{
+      await new Compressor({
+        concurrency,
+      }).compress(tasks as ICompressor.CompressTask[],{
+        tinypngApiKeys:apiKeys.map(item=>item.api_key),
+        onFulfilled:(res)=>{
+          const targetFile = fileMap.get(res.id);
+          if(targetFile){
+            targetFile.compressStatus = IScheduler.TaskStatus.Completed;
+            targetFile.compressedSize = res.output.size;
+            targetFile.formatCompressedSize = formatFileSize(res.output.size);
+            targetFile.compressRate = `${((targetFile.size - targetFile.compressedSize) / targetFile.size * 100).toFixed(2)}%`;
+            targetFile.compressedPath = res.output.url;
+            setFiles([...files])
+          }
+        },
+        onRejected:(res)=>{
+          const targetFile = fileMap.get(res.id);
+          if(targetFile){
+            targetFile.compressStatus = IScheduler.TaskStatus.Failed;
+            if(isString(res)){
+              targetFile.errorMessage = res;
+            }
+            setFiles([...files])
+          }
+        }
+      });
+      toast.success(t("tips.compress_completed",{num:tasks.length}));
+      setInCompressing(false);
+    }
   }
 
   const handleSave = async () => {
