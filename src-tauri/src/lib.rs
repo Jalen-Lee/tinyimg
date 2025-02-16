@@ -140,6 +140,30 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![fs::parse_dir])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .build(tauri::generate_context!())
+        .expect("error while running tauri application")
+        .run(|app, event| match event {
+            tauri::RunEvent::WindowEvent {
+                label,
+                event: win_event,
+                ..
+            } => match win_event {
+                tauri::WindowEvent::CloseRequested { api, .. } => {
+                    let win = app.get_webview_window(label.as_str()).unwrap();
+                    win.hide().unwrap();
+                    api.prevent_close();
+                }
+                _ => {}
+            },
+            tauri::RunEvent::Reopen {
+                has_visible_windows,
+                ..
+            } => {
+                if !has_visible_windows {
+                    let window = app.get_webview_window("main").unwrap();
+                    window.show().unwrap();
+                }
+            }
+            _ => {}
+        });
 }

@@ -1,7 +1,7 @@
 import {memo} from 'react';
 import ImgTag from '@/components/img-tag';
 import { CheckboxGroup } from '@radix-ui/themes';
-import {SquareArrowOutUpRight,Trash2Icon,FolderOpenIcon,ClipboardCopy} from 'lucide-react'
+import {SquareArrowOutUpRight,Trash2Icon,FolderOpenIcon,ClipboardCopy,SquareSplitHorizontal} from 'lucide-react'
 import { Dropdown, MenuProps } from 'antd';
 import { openPath,revealItemInDir } from '@tauri-apps/plugin-opener';
 import useCompressionStore from '@/store/compression';
@@ -13,6 +13,8 @@ import { cn } from '@/lib/utils';
 import { Badge } from '@radix-ui/themes';
 import { useI18n } from '@/i18n';
 import { type } from '@tauri-apps/plugin-os';
+import {CompareBtn} from '@/components/image-comparison';
+
 
 export interface FileCardProps {
   id: string,
@@ -33,6 +35,10 @@ enum Action {
   Reveal = 'reveal',
   CopyPath = 'copy_path',
   DeleteInList = 'delete_in_list',
+}
+
+const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => {
+  e.stopPropagation()
 }
 
 function FileCard(props: FileCardProps) {
@@ -145,6 +151,13 @@ function FileCard(props: FileCardProps) {
           <div className="absolute bottom-2 left-2">
             <ImgTag type={ext} />
           </div>
+          {
+            compressStatus === IScheduler.TaskStatus.Completed && (
+              <div className="absolute bottom-2 right-2" onContextMenu={stopPropagation} onClick={stopPropagation}>
+                <CompareBtn originalImage={assetPath} editedImage={compressedPath} />
+              </div>
+            )
+          }
           <img
             src={assetPath}
             alt={name}

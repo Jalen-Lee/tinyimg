@@ -1,9 +1,10 @@
-import {memo} from 'react';
+import {memo,useEffect} from 'react';
 import FileCard from './file-card';
 import useCompressionStore from '@/store/compression';
 import useSelector from '@/hooks/useSelector';
 import Toolbar from './toolbar';
 import { CheckboxGroup } from '@radix-ui/themes';
+
 export interface FileManagerProps {
 
 }
@@ -14,7 +15,7 @@ function FileManager(props: FileManagerProps){
   const handleSelect = (value:string[])=>{
     setSelectedFiles(value)
   }
-
+  
   return (
     <div className="h-full relative flex flex-col">
       <CheckboxGroup.Root className="flex-1 p-4" value={selectedFiles} highContrast color="gray" onValueChange={handleSelect}>

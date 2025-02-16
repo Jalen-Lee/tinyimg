@@ -43,7 +43,7 @@ export default memo(function SidebarNav() {
 
   return (
     <div
-      className="h-screen w-[78px] flex-shrink-0 pt-12 pb-4 bg-gray-50 border-r border-gray-200 flex flex-col justify-between"
+      className="h-screen w-[73px] flex-shrink-0 pt-12 pb-4 bg-gray-50 border-r border-gray-200 flex flex-col justify-between"
       data-tauri-drag-region="true"
     >
       <div className="flex flex-col gap-2 justify-center items-center">
