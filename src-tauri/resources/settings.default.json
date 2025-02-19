@@ -1,5 +1,6 @@
 {
   "language": "",
+  "system_notification": false,
   "compression_tinypng_api_keys": [],
   "compression_tasks_concurrency": 6,
   "compression_tasks_output_mode": "overwrite",

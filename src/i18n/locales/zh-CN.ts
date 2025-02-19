@@ -1,12 +1,15 @@
 export default {
   "nav.home": "首页",
   "nav.compression": "图片压缩",
+  "nav.settings": "设置",
   "home": "首页",
   "slogan": "专业的图片处理解决方案，提供高效的图片压缩、格式转换和云存储服务，助您轻松管理图片资源。",
   "settings": "设置",
   "settings.description": "管理应用设置和偏好。",
   "settings.general.language": "语言",
   "settings.general.language.description": "选择您偏好的应用语言。",
+  "settings.general.notification.title": "系统通知",
+  "settings.general.notification.description": "在应用操作完成后，通过系统通知横幅通知您。",
   "general": "通用配置",
   "general.description": "管理应用的通用设置和偏好。",
   "compression": "图片压缩",
@@ -78,9 +81,10 @@ export default {
 
   // Toast/Notification massages
   "tips.tinypng_api_keys_not_configured": "TinyPNG API密钥未配置，请在“设置->图片压缩->TinyPNG API密钥”中配置。",
-  "tips.compress_completed": "{{num}}张图片压缩完成",
-  "tips.quick_compress_completed": "{{num}}张图片压缩完成并保存",
-  "tips.save_completed": "{{num}}张图片保存成功",
+  "tips.compressing": "正在压缩... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}",
+  "tips.compress_completed": "压缩完成，成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}",
+  "tips.saving": "正在保存... 成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}",
+  "tips.save_completed": "保存完成，成功：{{fulfilled}}，失败：{{rejected}}，总任务数：{{total}}",
   "tips.settings_reset_success": "应用配置重置完成",
   "tips.file_path_copied": "文件路径已复制到剪贴板",
 }

@@ -5,26 +5,27 @@ import {isFunction} from 'radash';
 import { open } from '@tauri-apps/plugin-dialog';
 import { parseFiles } from '../../utils/fs';
 import useSelector from '@/hooks/useSelector';
-import useAppStore from '../../store/app.store';
 import { getCurrentWebview } from '@tauri-apps/api/webview';
 import {ImagePlus} from 'lucide-react'
 import useCompressionStore from '../../store/compression';
 import { CompressionContext } from '.';
 import {isValidArray} from '@/utils';
+import {useNavigate} from 'react-router';
 
 const validExts = ['png', 'jpg', 'jpeg', 'webp']
 
-function SelectFile(){
+function CompressionGuide(){
   const {
     progressRef
   } = useContext(CompressionContext)
 
+	const navigate = useNavigate();
+
   const dragDropController = useRef<UnlistenFn | null>(null);
   const {
-    setHasSelected,
     setFiles,
     setSelectedFiles
-  } = useCompressionStore(useSelector(['setHasSelected','setFiles','setSelectedFiles']))
+  } = useCompressionStore(useSelector(['setFiles','setSelectedFiles']))
 
 	const handleFiles = async (files: string[] | null) => {
 		if(!isValidArray(files)) return;
@@ -35,9 +36,9 @@ function SelectFile(){
 		const {
 			files: fileInfos,
 		} = await parseFiles(files!,validExts);
-		setHasSelected(true);
 		setFiles(fileInfos);
 		setSelectedFiles(fileInfos.map(file=>file.id))
+		navigate('/compression/classic')
 		setTimeout(()=>{
 			progressRef.current?.done()
 		},100)
@@ -100,4 +101,4 @@ function SelectFile(){
   )
 }
 
-export default memo(SelectFile)
+export default memo(CompressionGuide)

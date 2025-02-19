@@ -1,6 +1,8 @@
 import { Separator } from '@/components/ui/separator';
+import { Card } from '@/components/ui/card';
 import { SettingsHeader } from '../header';
 import Language from './language';
+import Notification from './notification';
 import { useI18n } from '../../../i18n';
 
 export default function SettingsGeneral() {
@@ -12,7 +14,10 @@ export default function SettingsGeneral() {
         text={t('general.description')}
       />
       <Separator />
-      <Language />
+      <Card>
+        <Language />
+        <Notification />
+      </Card>
     </div>
   );
 }

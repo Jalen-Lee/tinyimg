@@ -3,6 +3,7 @@ export const DEFAULT_SETTINGS_FILE_NAME = 'settings.default.json'
 
 export enum SettingsKey {
   language = 'language',
+  system_notification = 'system_notification',
   compression_tinypng_api_keys = 'compression_tinypng_api_keys',
   compression_tasks_concurrency = 'compression_tasks_concurrency',
   compression_tasks_output_mode = 'compression_tasks_output_mode',

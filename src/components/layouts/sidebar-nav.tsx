@@ -24,14 +24,15 @@ export interface NavigationProps {
 
 export default memo(function SidebarNav() {
   const t = useI18n();
+  const location = useLocation();
 
   const navigation: NavigationProps = {
     primary: [
-      {
-        icon: <House className="h-5 w-5" />,
-        title: t('nav.home'),
-        href: '/home',
-      },
+      // {
+      //   icon: <House className="h-5 w-5" />,
+      //   title: t('nav.home'),
+      //   href: '/home',
+      // },
       {
         icon: <Zap className="h-5 w-5" />,
         title: t('nav.compression'),
@@ -48,18 +49,32 @@ export default memo(function SidebarNav() {
     >
       <div className="flex flex-col gap-2 justify-center items-center">
         <img
-          className={`h-10 w-10 rounded-full bg-transparent shadow-lg duration-700 [transform-style:preserve-3d] hover:[transform:rotateY(-180deg)]`}
+          className={`h-10 w-10 bg-transparent duration-700 [transform-style:preserve-3d] hover:[transform:rotateY(-180deg)]`}
           aria-hidden="true"
           src={Logo}
         />
         {navigation?.primary?.map((item) => <NavItem item={item} key={item.href}/>)}
       </div>
-      <div className="flex flex-col gap-2 justify-center items-center">
-        <Link to="/settings" viewTransition>
-          <Button variant="ghost" size="icon">
-            <Settings size={20} className="shrink-0 !w-[20px] !h-[20px]"/>
-          </Button>
-        </Link>
+      <div className="flex flex-col justify-center items-center">
+        <Tooltip content={t('nav.settings')} side="right">
+          <Link 
+            to="/settings" 
+            title={t('nav.settings')} 
+            viewTransition 
+            onClick={(event) => {
+              if (location.pathname.startsWith("/settings")) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <Button
+              variant='ghost'
+              className={cn('h-12 justify-start',location.pathname.startsWith('/settings') ? 'bg-gray-100' : 'bg-muted')}
+            >
+              <Settings className="h-5 w-5"/>
+            </Button>
+          </Link>
+        </Tooltip>
       </div>
     </div>
   );
@@ -75,18 +90,22 @@ const NavItem = memo(function NavItem({
   onClick?: () => void;
 }) {
   const location = useLocation();
+  const preventDefault = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname.startsWith(item.href)) {
+      event.preventDefault();
+    }
+  };
   return (
     <Tooltip content={item.title} side="right">
-      <Button
-        key={item.title}
-        variant='ghost'
-        asChild
-        className={cn('h-12 justify-start',location.pathname === item.href ? 'bg-gray-100' : 'bg-muted', className)}
-      >
-        <Link key={item.title} to={item.href} title={item.title} viewTransition {...props}>
+      <Link key={item.title} to={item.href} title={item.title} viewTransition onClick={preventDefault} {...props}>
+        <Button
+          key={item.title}
+          variant='ghost'
+          className={cn('h-12 justify-start',location.pathname.startsWith(item.href) ? 'bg-gray-100' : 'bg-muted', className)}
+        >
           {item.icon}
-        </Link>
-      </Button>
+        </Button>
+      </Link>
     </Tooltip>
   );
 });

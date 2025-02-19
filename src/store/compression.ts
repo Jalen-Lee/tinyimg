@@ -3,7 +3,6 @@ import EventEmitter from 'eventemitter3';
 
 interface CompressionState {
   eventEmitter: EventEmitter;
-  hasSelected: boolean;
   files: FileInfo[];
   fileMap: Map<string, FileInfo>;
   selectedFiles: string[];
@@ -12,7 +11,6 @@ interface CompressionState {
 }
 
 interface CompressionAction{
-  setHasSelected: (hasSelected: boolean)=>void;
   setInCompressing: (inCompressing: boolean)=>void;
   setInSaving: (inSaving: boolean)=>void;
   getFileById: (id: string)=>FileInfo | undefined;
@@ -27,16 +25,11 @@ interface CompressionAction{
 const useCompressionStore = create<CompressionState & CompressionAction>(
   (set, get) => ({
     eventEmitter: new EventEmitter(),
-    hasSelected: false,
     files: [],
     fileMap: new Map(),
     selectedFiles: [],
     inCompressing: false,
     inSaving: false,
-
-    setHasSelected: (hasSelected: boolean)=>{
-      set({ hasSelected });
-    },
     setInCompressing: (inCompressing: boolean)=>{
       set({ inCompressing });
     },
@@ -84,7 +77,6 @@ const useCompressionStore = create<CompressionState & CompressionAction>(
     },
     reset: ()=>{
       set({
-        hasSelected: false,
         inCompressing: false,
         inSaving: false,
         files: [],

@@ -1,4 +1,4 @@
-import {memo} from 'react';
+import {memo,useState,useEffect} from 'react';
 import ImgTag from '@/components/img-tag';
 import { CheckboxGroup } from '@radix-ui/themes';
 import {SquareArrowOutUpRight,Trash2Icon,FolderOpenIcon,ClipboardCopy,SquareSplitHorizontal} from 'lucide-react'
@@ -14,20 +14,22 @@ import { Badge } from '@radix-ui/themes';
 import { useI18n } from '@/i18n';
 import { type } from '@tauri-apps/plugin-os';
 import {CompareBtn} from '@/components/image-comparison';
+import { useUpdate } from 'ahooks';
 
 
 export interface FileCardProps {
-  id: string,
-  name: string,
-  ext: string,
-  size: number,
-  compressedSize: number,
-  formatSize: string,
-  formatCompressedSize: string,
-  compressRate: string,
-  compressStatus: IScheduler.TaskStatus,
-  assetPath: string,
-  compressedPath: string,
+  // id: string,
+  // name: string,
+  // ext: string,
+  // size: number,
+  // compressedSize: number,
+  // formatSize: string,
+  // formatCompressedSize: string,
+  // compressRate: string,
+  // compressStatus: IScheduler.TaskStatus,
+  // assetPath: string,
+  // compressedPath: string,
+  id: string
 }
 
 enum Action {
@@ -42,9 +44,11 @@ const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) => {
 }
 
 function FileCard(props: FileCardProps) {
-  const { id,name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate,compressedPath } = props;
+  const { id } = props;
+  const update = useUpdate();
   const t = useI18n();
-  const { removeFile } = useCompressionStore(useSelector(['removeFile']))
+  const { removeFile,eventEmitter,fileMap } = useCompressionStore(useSelector(['removeFile','eventEmitter','fileMap']))
+  const { name,ext,size,compressedSize,formatSize,formatCompressedSize,compressStatus,assetPath,compressRate,compressedPath } = fileMap.get(id) || {};
 
   const items: MenuProps['items'] = [
     {
@@ -99,6 +103,22 @@ function FileCard(props: FileCardProps) {
         break;
     }
   }
+
+  useEffect(()=>{
+    const updateFn = ({id,all}:{id?:string,all?:boolean})=>{
+      if(all){
+        update();
+      }else if(id === id){
+        update();
+      }
+    }
+    eventEmitter.on('update_file_item',updateFn)
+    return () => {
+      eventEmitter.off('update_file_item',updateFn)
+    }
+  },[id])
+
+  if(!assetPath) return null;
 
   return (
     <Dropdown

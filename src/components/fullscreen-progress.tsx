@@ -86,7 +86,7 @@ const FullscreenProgress = forwardRef<
       >
         <div
           ref={indicatorRef}
-          className="h-full w-full flex-1 bg-neutral-900 transition-all dark:bg-neutral-50"
+          className="h-full w-full flex-1 bg-neutral-900 dark:bg-neutral-50"
           style={{ transform: `translateX(-100%)` }}
         />
       </div>

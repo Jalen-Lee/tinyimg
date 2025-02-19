@@ -1,7 +1,7 @@
 import {memo} from 'react';
 import FileManager from './file-manager';
 
-function FileExplorer(){
+function CompressionClassic(){
   return (
     <div className="h-full">
       <FileManager/>
@@ -9,4 +9,4 @@ function FileExplorer(){
   )
 }
 
-export default memo(FileExplorer)
+export default memo(CompressionClassic)

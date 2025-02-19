@@ -12,6 +12,7 @@ import i18next from 'i18next';
 
 interface SettingsState {
   [SettingsKey.language]: string;
+  [SettingsKey.system_notification]: boolean;
   [SettingsKey.compression_tinypng_api_keys]: string[];
   [SettingsKey.compression_tasks_concurrency]: number;
   [SettingsKey.compression_tasks_output_mode]: SettingsCompressionTaskConfigOutputMode;
@@ -36,6 +37,7 @@ const useSettingsStore = create<SettingsState & SettingsAction>(
     settingsFilePath: '',
     defaultSettingsFilePath: '',
     [SettingsKey.language]: 'en-US',
+    [SettingsKey.system_notification]: false,
     [SettingsKey.compression_tinypng_api_keys]: [],
     [SettingsKey.compression_tasks_concurrency]: 6,
     [SettingsKey.compression_tasks_output_mode]: SettingsCompressionTaskConfigOutputMode['overwrite'],

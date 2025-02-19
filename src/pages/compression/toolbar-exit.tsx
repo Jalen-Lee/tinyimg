@@ -3,10 +3,11 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from 'lucide-react';
 import useCompressionStore from '@/store/compression';
 import useSelector from "@/hooks/useSelector";
+import { useNavigate } from 'react-router';
 
 
 function ToolbarExit() {
-
+  const navigate = useNavigate();
   const {reset,inCompressing,inSaving} = useCompressionStore(useSelector([
     'reset','inCompressing','inSaving'
   ]))
@@ -14,6 +15,7 @@ function ToolbarExit() {
   const handleExit = () => {
     if(inCompressing || inSaving) return;
     reset();
+    navigate('/compression/guide');
   }
 
   return (

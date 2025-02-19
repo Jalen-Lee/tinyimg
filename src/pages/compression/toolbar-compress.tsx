@@ -19,8 +19,8 @@ export interface ToolbarCompressProps {
 }
 
 function ToolbarCompress(props: ToolbarCompressProps){
-  const {selectedFiles,fileMap,files,setFiles,setInCompressing,setInSaving,inCompressing,inSaving} = useCompressionStore(useSelector([
-    'selectedFiles','fileMap','files','setFiles','setInCompressing','setInSaving','inCompressing','inSaving'
+  const {selectedFiles,fileMap,files,setFiles,setInCompressing,setInSaving,inCompressing,inSaving,eventEmitter} = useCompressionStore(useSelector([
+    'selectedFiles','fileMap','files','setFiles','setInCompressing','setInSaving','inCompressing','inSaving','eventEmitter'
   ]))
   const t = useI18n()
 
@@ -75,7 +75,9 @@ function ToolbarCompress(props: ToolbarCompressProps){
         }
       }
     }).filter(Boolean)
-    setFiles([...files])
+    eventEmitter.emit('update_file_item',{
+      all: true
+    })
 
     if(!isValidArray(apiKeys)){
       toast.error(t("tips.tinypng_api_keys_not_configured"));
@@ -95,7 +97,7 @@ function ToolbarCompress(props: ToolbarCompressProps){
           const targetFile = fileMap.get(res.id);
           if(targetFile){
             fulfilled++;
-            toast(`正在压缩...（${fulfilled + rejected}/${tasks.length}）`, {
+            toast(t("tips.compressing",{fulfilled,rejected,total:tasks.length}), {
               id: toastId,
             });
             targetFile.compressStatus = IScheduler.TaskStatus.Done;
@@ -104,64 +106,94 @@ function ToolbarCompress(props: ToolbarCompressProps){
             targetFile.compressRate = `${((targetFile.size - targetFile.compressedSize) / targetFile.size * 100).toFixed(2)}%`;
             targetFile.assetPath = convertFileSrc(res.target);
             targetFile.compressedPath = res.target;
-            setFiles([...files])
+            eventEmitter.emit('update_file_item',{
+              id: targetFile.id
+            })
           }
         },
         onRejected:(res)=>{
           const targetFile = fileMap.get(res.id);
           if(targetFile){
             rejected++;
-            toast(`正在压缩...（${fulfilled + rejected}/${tasks.length}）`, {
+            toast(t("tips.compressing",{fulfilled,rejected,total:tasks.length}), {
               id: toastId,
             });
             targetFile.compressStatus = IScheduler.TaskStatus.Failed;
             if(isString(res)){
               targetFile.errorMessage = res;
             }
-            setFiles([...files])
+            eventEmitter.emit('update_file_item',{
+              id: targetFile.id
+            })
           }
         }
       });
       toast.promise(compressor, {
-        loading: `正在压缩...（${fulfilled + rejected}/${tasks.length}）`,
+        duration: Infinity,
+        closeButton: true,
+        loading: t("tips.compressing",{fulfilled,rejected,total:tasks.length}),
         id:toastId,
         success: () => {
-          return t("tips.quick_compress_completed",{num:tasks.length});
+          return t("tips.compress_completed",{fulfilled,rejected,total:tasks.length});
         },
         error: () => {
           setInCompressing(false);
-          return t("tips.quick_compress_failed",{num:tasks.length});
+          return t("tips.compress_completed",{fulfilled,rejected,total:tasks.length});
         }
       });
     }else{
-      await new Compressor({
+      const compressor = new Compressor({
         concurrency,
       }).compress(tasks as ICompressor.CompressTask[],{
         tinypngApiKeys:apiKeys.map(item=>item.api_key),
         onFulfilled:(res)=>{
           const targetFile = fileMap.get(res.id);
           if(targetFile){
+            fulfilled++;
+            toast(t("tips.compressing",{fulfilled,rejected,total:tasks.length}), {
+              id: toastId,
+            });
             targetFile.compressStatus = IScheduler.TaskStatus.Completed;
             targetFile.compressedSize = res.output.size;
             targetFile.formatCompressedSize = formatFileSize(res.output.size);
             targetFile.compressRate = `${((targetFile.size - targetFile.compressedSize) / targetFile.size * 100).toFixed(2)}%`;
             targetFile.compressedPath = res.output.url;
-            setFiles([...files])
+            eventEmitter.emit('update_file_item',{
+              id: targetFile.id
+            })
           }
         },
         onRejected:(res)=>{
           const targetFile = fileMap.get(res.id);
           if(targetFile){
+            rejected++;
+            toast(t("tips.compressing",{fulfilled,rejected,total:tasks.length}), {
+              id: toastId,
+            });
             targetFile.compressStatus = IScheduler.TaskStatus.Failed;
             if(isString(res)){
               targetFile.errorMessage = res;
             }
-            setFiles([...files])
+            eventEmitter.emit('update_file_item',{
+              id: targetFile.id
+            })
           }
         }
       });
-      toast.success(t("tips.compress_completed",{num:tasks.length}));
-      setInCompressing(false);
+      toast.promise(compressor, {
+        duration: Infinity,
+        closeButton: true,
+        loading: t("tips.compressing",{fulfilled,rejected,total:tasks.length}),
+        id:toastId,
+        success: () => {
+          setInCompressing(false);
+          return t("tips.compress_completed",{fulfilled,rejected,total:tasks.length});
+        },
+        error: () => {
+          setInCompressing(false);
+          return t("tips.compress_completed",{fulfilled,rejected,total:tasks.length});
+        }
+      });
     }
   }
 
@@ -191,33 +223,63 @@ function ToolbarCompress(props: ToolbarCompressProps){
         }
       }
     })
-    setFiles([...files])
+    eventEmitter.emit('update_file_item',{
+      all: true
+    })
 
-    await new Compressor({
+    const toastId = toast('Save');
+    let fulfilled = 0;
+    let rejected = 0;
+
+    const compressor = new Compressor({
       concurrency,
     }).save(tasks,{
       onFulfilled:(res)=>{
         const targetFile = fileMap.get(res.id);
         if(targetFile){
+          fulfilled++;
+          toast(t("tips.saving",{fulfilled,rejected,total:tasks.length}), {
+            id: toastId,
+          });
           targetFile.compressStatus = IScheduler.TaskStatus.Done;
           targetFile.assetPath = convertFileSrc(res.target);
           targetFile.compressedPath = res.target;
-          setFiles([...files])
+          eventEmitter.emit('update_file_item',{
+            id: targetFile.id
+          })
         }
       },
       onRejected:(res)=>{
         const targetFile = fileMap.get(res.id);
         if(targetFile){
+          rejected++;
+          toast(t("tips.saving",{fulfilled,rejected,total:tasks.length}), {
+            id: toastId,
+          });
           targetFile.compressStatus = IScheduler.TaskStatus.Failed;
           if(isString(res)){
             targetFile.errorMessage = res;
           }
-          setFiles([...files])
+          eventEmitter.emit('update_file_item',{
+            id: targetFile.id
+          })
         }
       }
     });
-    toast.success(t("tips.save_completed",{num:tasks.length}));
-    setInSaving(false);
+    toast.promise(compressor, {
+      duration: Infinity,
+      closeButton: true,
+      loading: t("tips.saving",{fulfilled,rejected,total:tasks.length}),
+      id:toastId,
+      success: () => {
+        setInSaving(false);
+        return t("tips.save_completed",{fulfilled,rejected,total:tasks.length});
+      },
+      error: () => {
+        setInSaving(false);
+        return t("tips.save_completed",{fulfilled,rejected,total:tasks.length});
+      }
+    });
   }
 
   return (

@@ -29,27 +29,25 @@ export default memo(function SettingsGeneralLanguage() {
     i18n.changeLanguage(value);
   }
   return (
-    <Card >
-      <CardHeader className="flex flex-row justify-between">
-        <div>
-          <CardTitle className="text-lg">{t('settings.general.language')}</CardTitle>
-          <CardDescription>{t('settings.general.language.description')}</CardDescription>
-        </div>
-        <Select value={language} onValueChange={handleChangeLanguage}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Language"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {languages.map((language) => (
-                <SelectItem key={language.value} value={language.value}>
-                  {language.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </CardHeader>
-    </Card>
+    <CardHeader className="flex flex-row justify-between">
+      <div>
+        <CardTitle className="text-lg">{t('settings.general.language')}</CardTitle>
+        <CardDescription>{t('settings.general.language.description')}</CardDescription>
+      </div>
+      <Select value={language} onValueChange={handleChangeLanguage}>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Language"/>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            {languages.map((language) => (
+              <SelectItem key={language.value} value={language.value}>
+                {language.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </CardHeader>
   );
 });
